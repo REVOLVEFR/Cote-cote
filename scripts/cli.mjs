@@ -133,6 +133,28 @@ async function cmdAdd() {
   if (Number.isNaN(+ko)) die(`Coup d'envoi illisible : ${kickoff}`);
   if (+ko <= Date.now()) die("Le coup d'envoi est déjà passé. Un pari se publie avant.");
 
+  // Si l'identifiant du match est fourni, on va chercher les écussons et les
+  // noms officiels. Ça valide aussi l'identifiant : une erreur de saisie se
+  // verrait sinon seulement au moment du règlement, une semaine plus tard.
+  const matchId = (e.MATCH_ID || "").trim() || null;
+  let teams = null;
+  if (matchId && process.env.FOOTBALL_DATA_TOKEN) {
+    try {
+      const r = await fetch(`https://api.football-data.org/v4/matches/${matchId}`, {
+        headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_TOKEN },
+      });
+      if (!r.ok) throw new Error(`football-data a répondu ${r.status}`);
+      const m = await r.json();
+      teams = {
+        home: { name: m.homeTeam.shortName || m.homeTeam.name, crest: m.homeTeam.crest || null },
+        away: { name: m.awayTeam.shortName || m.awayTeam.name, crest: m.awayTeam.crest || null },
+      };
+      console.log(`Équipes reconnues : ${teams.home.name} – ${teams.away.name}`);
+    } catch (err) {
+      die(`Identifiant de match ${matchId} refusé : ${err.message}`);
+    }
+  }
+
   const db = await load();
   const pick = {
     id: "p" + Date.now().toString(36),
@@ -142,7 +164,8 @@ async function cmdAdd() {
     market,
     label: (e.LABEL || "").trim() || market,
     kickoff: ko.toISOString(),
-    matchId: (e.MATCH_ID || "").trim() || null,
+    matchId,
+    teams,
     why: (e.WHY || "").trim(),
     caveat: (e.CAVEAT || "").trim(),
     odds: null,
