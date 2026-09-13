@@ -112,3 +112,31 @@ td.r,th.r{text-align:right}
   .hide-s{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ------------------------------------------------- écussons et confrontation */
+.crest{vertical-align:-6px;margin-right:8px;object-fit:contain}
+.crest-none{display:inline-block;width:26px;height:26px;border-radius:50%;
+  background:var(--wash);border:1px solid var(--line)}
+.duel{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;line-height:1.3}
+.duel .side{display:inline-flex;align-items:center}
+.duel .vs{font-size:14px;font-weight:400;color:var(--mute)}
+td .crest{width:20px;height:20px;vertical-align:-4px;margin-right:5px}
+td .crest-none{width:20px;height:20px}
+
+/* ------------------------------------------------------- bandeau et mise */
+.strip{display:flex;gap:0;border:1px solid var(--line);border-radius:5px;
+  overflow:hidden;margin-bottom:34px;background:#fff}
+.strip>div{flex:1;padding:11px 14px;border-right:1px solid var(--line)}
+.strip>div:last-child{border-right:none}
+.strip .k{display:block;font-size:12px;color:var(--mute)}
+.strip .v{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.stake{margin-top:10px;font-size:14px;color:var(--deep)}
+
+/* --------------------------------------------------------------- légende */
+.legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:13px;color:var(--mute);margin-top:8px}
+.sw{display:inline-block;width:18px;height:0;border-top-width:2px;
+  border-top-style:solid;margin-right:2px}
+.sw-flat{border-color:var(--deep)}
+.sw-comp{border-color:var(--mute);border-top-style:dashed}
+.sw+.sw,.legend .sw:not(:first-child){margin-left:14px}
