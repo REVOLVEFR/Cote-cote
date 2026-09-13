@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cote à Cote — paris suivis sur les grands championnats européens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="#" data-go="upcoming">Cote à Cote</a>
+  <nav>
+    <button data-go="upcoming" class="on">À venir</button>
+    <button data-go="history">Historique</button>
+    <button data-go="record">Bilan</button>
+  </nav>
+</header>
+
+<main id="app" aria-live="polite">
+  <p class="loading">Chargement…</p>
+</main>
+
+<footer class="foot">
+  <p>Cotes relevées chez Winamax, Betclic et Unibet. Chaque pari est horodaté par le
+     serveur au moment de sa publication et ne peut plus être modifié.</p>
+  <p>Contenu informatif. Les paris sportifs comportent un risque de perte.
+     Interdit aux mineurs. Joueurs Info Service : 09 74 75 13 13.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
