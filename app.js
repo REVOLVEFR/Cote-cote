@@ -7,7 +7,7 @@ const COMPETITIONS = {
   FL1: "Ligue 1", DED: "Eredivisie", PPL: "Liga Portugal",
 };
 
-const CAPITAL = 100;   // capital de départ, en euros
+const CAPITAL = 1000;   // capital de départ, en euros
 const STAKE = 0.01;    // 1 % — mise fixe de 1 € par pari
 
 let DB = null;
