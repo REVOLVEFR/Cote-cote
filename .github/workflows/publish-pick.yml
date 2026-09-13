@@ -47,6 +47,7 @@ jobs:
           node-version: "20"
       - run: node scripts/cli.mjs add
         env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
           COMP: ${{ inputs.comp }}
           MATCH: ${{ inputs.match }}
           MARKET: ${{ inputs.market }}
