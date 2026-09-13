@@ -1,0 +1,64 @@
+name: Publier un pari
+
+on:
+  workflow_dispatch:
+    inputs:
+      comp:
+        description: Championnat
+        required: true
+        type: choice
+        options: [PL, PD, BL1, SA, FL1, DED, PPL]
+      match:
+        description: "Rencontre (ex. Brest - Paris Saint-Germain)"
+        required: true
+      market:
+        description: "Code du marche : 1 X 2 1X X2 12 BTTS NOBTTS O2.5 U2.5"
+        required: true
+      label:
+        description: "Libelle affiche (ex. Moins de 2,5 buts)"
+        required: false
+      kickoff:
+        description: "Coup d'envoi en UTC (2026-09-19T18:45:00Z)"
+        required: true
+      match_id:
+        description: Identifiant football-data du match
+        required: false
+      why:
+        description: Pourquoi ce pari
+        required: false
+      caveat:
+        description: Ce qui peut le faire echouer
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs add
+        env:
+          COMP: ${{ inputs.comp }}
+          MATCH: ${{ inputs.match }}
+          MARKET: ${{ inputs.market }}
+          LABEL: ${{ inputs.label }}
+          KICKOFF: ${{ inputs.kickoff }}
+          MATCH_ID: ${{ inputs.match_id }}
+          WHY: ${{ inputs.why }}
+          CAVEAT: ${{ inputs.caveat }}
+      - name: Commiter le pari
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git commit -m "Pari publie"
+          git push
