@@ -1,0 +1,52 @@
+name: Enregistrer des cotes
+
+on:
+  workflow_dispatch:
+    inputs:
+      pick_id:
+        description: Identifiant du pari
+        required: true
+      phase:
+        description: Moment du releve
+        required: true
+        type: choice
+        options: [open, close]
+      winamax:
+        description: Cote Winamax
+        required: false
+      betclic:
+        description: Cote Betclic
+        required: false
+      unibet:
+        description: Cote Unibet
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  odds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs odds
+        env:
+          PICK_ID: ${{ inputs.pick_id }}
+          PHASE: ${{ inputs.phase }}
+          WINAMAX: ${{ inputs.winamax }}
+          BETCLIC: ${{ inputs.betclic }}
+          UNIBET: ${{ inputs.unibet }}
+      - name: Commiter les cotes
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git commit -m "Cotes enregistrees"
+          git push
