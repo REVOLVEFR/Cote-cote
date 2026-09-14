@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 // Outil en ligne de commande de Cote à Cote.
-// Tourne dans GitHub Actions, sans aucune dépendance : Node 20+ suffit.
+// Aucune dépendance : Node 20+ suffit.
 //
 //   node scripts/cli.mjs settle    règle les rencontres terminées
 //   node scripts/cli.mjs add       publie un pari (entrées via variables d'env)
 //   node scripts/cli.mjs odds      enregistre des cotes
+//   node scripts/cli.mjs manual    règle à la main un pari non décidable
 
 import { readFile, writeFile } from "node:fs/promises";
 
 const FILE = new URL("../data/picks.json", import.meta.url);
 
+// Les 12 compétitions du palier gratuit de football-data.
+// Coupes nationales, Europa League et amicaux exigent le palier à 49 €/mois.
 export const COMPETITIONS = {
   PL: "Premier League",
   PD: "Liga",
@@ -18,9 +21,15 @@ export const COMPETITIONS = {
   FL1: "Ligue 1",
   DED: "Eredivisie",
   PPL: "Liga Portugal",
+  ELC: "Championship",
+  BSA: "Brasileirão",
+  CL: "Ligue des Champions",
+  EC: "Championnat d'Europe",
+  WC: "Coupe du Monde",
 };
 
 const BOOKS = ["winamax", "betclic", "unibet"];
+const MAX_STAKE = 0.02; // plafond de mise : 2 % du capital
 
 async function load() {
   try {
@@ -71,19 +80,34 @@ export function settle(market, home, away) {
   return null;
 }
 
+// Un combiné tombe dès qu'une jambe tombe. Il ne gagne que si toutes passent.
+// Les jambes remboursées sont retirées du calcul, comme chez le bookmaker.
+export function settleParlay(legs) {
+  if (legs.some((l) => l.status === "lost")) return "lost";
+  if (legs.some((l) => !l.status || l.status === "pending")) return null;
+  return legs.every((l) => l.status === "void") ? "void" : "won";
+}
+
+// Toutes les jambes en attente d'un pari, combiné ou non.
+const legsOf = (p) =>
+  p.legs && p.legs.length ? p.legs : [{ comp: p.comp, matchId: p.matchId, market: p.market, holder: p }];
+
 async function cmdSettle() {
   const token = process.env.FOOTBALL_DATA_TOKEN;
   if (!token) die("FOOTBALL_DATA_TOKEN absent des secrets du dépôt.");
 
   const db = await load();
-  const waiting = db.picks.filter((p) => p.status === "pending" && p.matchId);
+  const waiting = db.picks.filter((p) => p.status === "pending");
   if (!waiting.length) return console.log("Aucun pari en attente à régler.");
 
-  const codes = [...new Set(waiting.map((p) => p.comp))];
+  const codes = [
+    ...new Set(waiting.flatMap((p) => legsOf(p).map((l) => l.comp)).filter(Boolean)),
+  ];
+  if (!codes.length) return console.log("Aucun pari relié à un match identifié.");
+
   const now = Date.now();
   const from = new Date(now - 8 * 864e5).toISOString().slice(0, 10);
   const to = new Date(now + 864e5).toISOString().slice(0, 10);
-
   const url =
     `https://api.football-data.org/v4/matches?competitions=${codes.join(",")}` +
     `&dateFrom=${from}&dateTo=${to}`;
@@ -91,32 +115,90 @@ async function cmdSettle() {
   if (!res.ok) die(`football-data a répondu ${res.status}`);
 
   const byId = new Map(((await res.json()).matches || []).map((m) => [String(m.id), m]));
-  let done = 0;
+  let done = 0, changed = false;
 
   for (const p of waiting) {
-    const m = byId.get(String(p.matchId));
-    if (!m || m.status !== "FINISHED") continue;
-    const ft = m.score.fullTime;
-    if (ft.home == null || ft.away == null) continue;
+    const legs = p.legs && p.legs.length ? p.legs : null;
 
-    p.score = `${ft.home}-${ft.away}`;
-    const issue = settle(p.market, ft.home, ft.away);
-    if (issue) {
-      p.status = issue;
+    if (!legs) {
+      if (!p.matchId) continue;
+      const m = byId.get(String(p.matchId));
+      if (!m || m.status !== "FINISHED") continue;
+      const ft = m.score.fullTime;
+      if (ft.home == null || ft.away == null) continue;
+      p.score = `${ft.home}-${ft.away}`;
+      changed = true;
+      const issue = settle(p.market, ft.home, ft.away);
+      if (issue) {
+        p.status = issue;
+        p.settledAt = new Date().toISOString();
+        done++;
+        console.log(`${p.match} ${p.score} → ${issue}`);
+      } else {
+        p.needsManual = true;
+        console.log(`${p.match} ${p.score} → règlement manuel (${p.market})`);
+      }
+      continue;
+    }
+
+    // Combiné : on règle chaque jambe, puis l'ensemble.
+    for (const l of legs) {
+      if (l.status && l.status !== "pending") continue;
+      const m = l.matchId && byId.get(String(l.matchId));
+      if (!m || m.status !== "FINISHED") continue;
+      const ft = m.score.fullTime;
+      if (ft.home == null || ft.away == null) continue;
+      l.score = `${ft.home}-${ft.away}`;
+      const issue = settle(l.market, ft.home, ft.away);
+      if (issue) {
+        l.status = issue;
+        changed = true;
+        console.log(`  jambe ${l.match || l.matchId} ${l.score} → ${issue}`);
+      } else {
+        l.needsManual = true;
+      }
+    }
+    const overall = settleParlay(legs);
+    if (overall) {
+      p.status = overall;
       p.settledAt = new Date().toISOString();
       done++;
-      console.log(`${p.match} ${p.score} → ${issue}`);
-    } else {
-      p.needsManual = true;
-      console.log(`${p.match} ${p.score} → règlement manuel (${p.market})`);
+      changed = true;
+      console.log(`${p.match} (combiné) → ${overall}`);
     }
   }
 
-  if (done || waiting.some((p) => p.needsManual)) await save(db);
+  if (changed) await save(db);
   console.log(`${done} pari(s) réglé(s).`);
 }
 
 /* ------------------------------------------------------------ publication */
+
+// Va chercher écussons et noms officiels. Valide aussi l'identifiant :
+// une faute de saisie se verrait sinon une semaine plus tard, au règlement.
+async function fetchMatch(matchId) {
+  const token = process.env.FOOTBALL_DATA_TOKEN;
+  if (!matchId || !token) return null;
+  const r = await fetch(`https://api.football-data.org/v4/matches/${matchId}`, {
+    headers: { "X-Auth-Token": token },
+  });
+  if (!r.ok) throw new Error(`identifiant ${matchId} refusé (${r.status})`);
+  const m = await r.json();
+  return {
+    home: { name: m.homeTeam.shortName || m.homeTeam.name, crest: m.homeTeam.crest || null },
+    away: { name: m.awayTeam.shortName || m.awayTeam.name, crest: m.awayTeam.crest || null },
+  };
+}
+
+function readStake(raw) {
+  if (!raw) return 0.01;
+  const n = Number(String(raw).replace(",", ".").replace("%", "")) / 100;
+  if (!Number.isFinite(n) || n <= 0) die(`Mise illisible : ${raw}`);
+  if (n > MAX_STAKE) {
+    die(`Mise de ${(n * 100).toFixed(1)} % refusée. Le plafond est ${MAX_STAKE * 100} %.`);
+  }
+  return n;
+}
 
 async function cmdAdd() {
   const e = process.env;
@@ -124,34 +206,51 @@ async function cmdAdd() {
   const match = (e.MATCH || "").trim();
   const market = (e.MARKET || "").trim().toUpperCase();
   const kickoff = (e.KICKOFF || "").trim();
+  const stakePct = readStake(e.STAKE_PCT);
 
-  if (!COMPETITIONS[comp]) die(`Championnat inconnu : ${comp}`);
   if (!match) die("La rencontre est obligatoire.");
-  if (!market) die("Le code du marché est obligatoire.");
 
   const ko = new Date(kickoff);
   if (Number.isNaN(+ko)) die(`Coup d'envoi illisible : ${kickoff}`);
   if (+ko <= Date.now()) die("Le coup d'envoi est déjà passé. Un pari se publie avant.");
 
-  // Si l'identifiant du match est fourni, on va chercher les écussons et les
-  // noms officiels. Ça valide aussi l'identifiant : une erreur de saisie se
-  // verrait sinon seulement au moment du règlement, une semaine plus tard.
+  // Combiné : LEGS contient un JSON [{comp, matchId, market, label}, ...]
+  let legs = null;
+  if ((e.LEGS || "").trim()) {
+    try {
+      legs = JSON.parse(e.LEGS);
+    } catch {
+      die("LEGS n'est pas un JSON valide.");
+    }
+    if (!Array.isArray(legs) || legs.length < 2) die("Un combiné demande au moins deux jambes.");
+    for (const l of legs) {
+      if (!COMPETITIONS[l.comp]) die(`Championnat inconnu dans une jambe : ${l.comp}`);
+      if (!l.market) die("Chaque jambe doit porter un marché.");
+      l.market = String(l.market).toUpperCase();
+      l.status = "pending";
+      if (l.matchId) {
+        try {
+          l.teams = await fetchMatch(l.matchId);
+          l.match = l.teams ? `${l.teams.home.name} – ${l.teams.away.name}` : l.match || "";
+        } catch (err) {
+          die(err.message);
+        }
+      }
+    }
+    console.log(`Combiné à ${legs.length} jambes.`);
+  } else {
+    if (!COMPETITIONS[comp]) die(`Championnat inconnu : ${comp}`);
+    if (!market) die("Le code du marché est obligatoire.");
+  }
+
   const matchId = (e.MATCH_ID || "").trim() || null;
   let teams = null;
-  if (matchId && process.env.FOOTBALL_DATA_TOKEN) {
+  if (!legs && matchId) {
     try {
-      const r = await fetch(`https://api.football-data.org/v4/matches/${matchId}`, {
-        headers: { "X-Auth-Token": process.env.FOOTBALL_DATA_TOKEN },
-      });
-      if (!r.ok) throw new Error(`football-data a répondu ${r.status}`);
-      const m = await r.json();
-      teams = {
-        home: { name: m.homeTeam.shortName || m.homeTeam.name, crest: m.homeTeam.crest || null },
-        away: { name: m.awayTeam.shortName || m.awayTeam.name, crest: m.awayTeam.crest || null },
-      };
-      console.log(`Équipes reconnues : ${teams.home.name} – ${teams.away.name}`);
+      teams = await fetchMatch(matchId);
+      if (teams) console.log(`Équipes reconnues : ${teams.home.name} – ${teams.away.name}`);
     } catch (err) {
-      die(`Identifiant de match ${matchId} refusé : ${err.message}`);
+      die(err.message);
     }
   }
 
@@ -159,13 +258,15 @@ async function cmdAdd() {
   const pick = {
     id: "p" + Date.now().toString(36),
     publishedAt: new Date().toISOString(),
-    comp,
+    comp: legs ? null : comp,
     match,
-    market,
-    label: (e.LABEL || "").trim() || market,
+    market: legs ? null : market,
+    legs,
+    label: (e.LABEL || "").trim() || market || "Combiné",
     kickoff: ko.toISOString(),
-    matchId,
+    matchId: legs ? null : matchId,
     teams,
+    stakePct,
     why: (e.WHY || "").trim(),
     caveat: (e.CAVEAT || "").trim(),
     odds: null,
@@ -176,7 +277,7 @@ async function cmdAdd() {
   };
   db.picks.push(pick);
   await save(db);
-  console.log(`Publié : ${pick.match} — ${pick.label} (${pick.id})`);
+  console.log(`Publié : ${pick.match} — ${pick.label} · mise ${(stakePct * 100).toFixed(1)} % (${pick.id})`);
 }
 
 /* ------------------------------------------------------------------ cotes */
@@ -215,9 +316,28 @@ async function cmdOdds() {
   console.log(`${p.match} — ${phase === "open" ? "cote du pari" : "cote de clôture"} : ${best(o)}`);
 }
 
+/* -------------------------------------------------------- règlement manuel */
+
+async function cmdManual() {
+  const id = (process.env.PICK_ID || "").trim();
+  const status = (process.env.STATUS || "").trim();
+  if (!["won", "lost", "void"].includes(status)) die("STATUS doit valoir won, lost ou void.");
+
+  const db = await load();
+  const p = db.picks.find((x) => x.id === id);
+  if (!p) die(`Pari introuvable : ${id}`);
+
+  p.status = status;
+  p.settledAt = new Date().toISOString();
+  p.settledManually = true;
+  delete p.needsManual;
+  await save(db);
+  console.log(`${p.match} réglé à la main : ${status}`);
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
