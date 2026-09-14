@@ -1,26 +1,14 @@
 name: Publier automatiquement
 
+# REGLE FIGEE le 14 septembre 2026, avant toute observation.
+# Probabilite >= 70 %, cote >= 1.25, aucun filtre d'ecart.
+# Les valeurs par defaut ne doivent pas etre modifiees : une regle ajustee
+# en cours de route ne mesure plus que la capacite a ajuster.
+
 on:
   schedule:
-    - cron: "0 9 * * 2"   # mardi 9h UTC, 4 a 5 jours avant les matchs du week-end
+    - cron: "0 9 * * 2"
   workflow_dispatch:
-    inputs:
-      horizon_days:
-        description: "Fenetre en jours"
-        required: false
-        default: "8"
-      max_picks:
-        description: "Nombre maximum de paris"
-        required: false
-        default: "5"
-      min_edge:
-        description: "Ecart minimal modele/marche (0.08 = 8%). C'est ce qui fait la rentabilite."
-        required: false
-        default: "0.08"
-      min_prob:
-        description: "Probabilite minimale (0.5 = 50%). Reduit la variance, pas le risque de perte."
-        required: false
-        default: "0.5"
 
 permissions:
   contents: write
@@ -41,10 +29,14 @@ jobs:
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          HORIZON_DAYS: ${{ inputs.horizon_days || '8' }}
-          MAX_PICKS: ${{ inputs.max_picks || '5' }}
-          MIN_EDGE: ${{ inputs.min_edge || '0.08' }}
-          MIN_PROB: ${{ inputs.min_prob || '0.5' }}
+          HORIZON_DAYS: "8"
+          MAX_PICKS: "5"
+          MIN_EDGE: "-1"
+          MIN_PROB: "0.70"
+          MIN_ODDS: "1.25"
+          MIN_GAMES: "8"
+          MIN_BOOKS: "2"
+          MAX_SPREAD: "0.06"
       - name: Commiter les paris
         run: |
           git config user.name "cote-a-cote"
