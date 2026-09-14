@@ -155,3 +155,4 @@ td .crest-none{width:20px;height:20px}
 .controls select{width:100%;font:inherit;font-size:15px;padding:8px 10px;
   border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
 .controls select:focus{outline:2px solid var(--deep);outline-offset:-1px}
+.prob{margin-top:12px;font-size:15px;color:var(--deep);max-width:62ch}
