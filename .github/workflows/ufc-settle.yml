@@ -1,0 +1,38 @@
+name: UFC - regler les combats
+
+on:
+  schedule:
+    - cron: "0 8,20 * * *"
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: "Afficher la reponse brute de l'API (pour verifier son format)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs ufcsettle
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          DEBUG_SCORES: ${{ inputs.debug }}
+      - name: Commiter les resultats
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git diff --staged --quiet || git commit -m "UFC : combats regles"
+          git push
