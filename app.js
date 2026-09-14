@@ -217,14 +217,14 @@ async function viewUpcoming() {
 
   app.innerHTML =
     `<div class="lede"><h1>Les paris ouverts</h1>
-      <p>Publiés avant le coup d'envoi et horodatés par un commit. Capital de
+      <p>Publiés dès l'ouverture des cotes, horodatés par un commit. Capital de
          départ ${eur(CAPITAL, 0)}, mise de référence ${BASE_STAKE * 100} %
          soit ${eur(CAPITAL * BASE_STAKE, 0)}, plafonnée à
          ${MAX_STAKE * 100} %.</p></div>${strip}` +
     (open.length
       ? open.map(card).join("")
       : `<div class="empty">Aucun pari ouvert pour le moment. Les prochains
-           paraîtront la veille de la journée de championnat.</div>`);
+           paraissent dès que les cotes ouvrent, souvent une semaine avant.</div>`);
 }
 
 /* --------------------------------------------------------------- historique */
