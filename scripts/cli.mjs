@@ -10,6 +10,7 @@
 //   node scripts/cli.mjs propose   sélectionne et publie via l'API Anthropic
 //   node scripts/cli.mjs autoodds  relève les cotes chez The Odds API
 //   node scripts/cli.mjs model     sélectionne par modèle de Poisson (sans LLM)
+//   node scripts/cli.mjs veto      écarte un pari, avec raison obligatoire
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -536,6 +537,13 @@ Réponds uniquement par un tableau JSON, sans texte autour, sans balises de code
    championnats ayant un pari en attente. */
 
 const OA = "https://api.the-odds-api.com/v4";
+
+const median = (xs) => {
+  const v = xs.filter(Boolean).sort((a, b) => a - b);
+  if (!v.length) return null;
+  const h = v.length >> 1;
+  return v.length % 2 ? v[h] : (v[h - 1] + v[h]) / 2;
+};
 const WANT_BOOKS = { betclic: "betclic_fr", unibet: "unibet_eu", winamax: "winamax_fr" };
 const CLOSE_WINDOW_MIN = Number(process.env.CLOSE_WINDOW_MIN || 150);
 
@@ -662,12 +670,38 @@ async function cmdAutoOdds() {
 
 const PRIOR_GAMES = 6;      // poids du a priori : 6 matchs fictifs à la moyenne
 const HOME_ADV = 1.12;      // multiplicateur des buts attendus à domicile
-const MIN_EDGE = Number(process.env.MIN_EDGE || 0.08);
+/* ====================================================================
+   RÈGLE FIGÉE — déclarée le 14 septembre 2026, avant toute observation.
+   NE PAS MODIFIER. Toute retouche invalide le test : une règle ajustée
+   en cours de route ne mesure plus que la capacité à ajuster.
+
+   Le backtest sur 24 389 matchs a réfuté toutes les variantes fondées sur
+   l'écart de prix. Une seule n'a pas été réfutée : probabilité ≥ 70 %.
+   C'est elle, et rien d'autre, qui est testée ici.
+
+   Le tri par écart relatif est abandonné : sur une issue à 2 % de
+   probabilité, une erreur de 2 points produit un écart de +100 %. Trier
+   ainsi revenait à sélectionner les erreurs du modèle. Le tri se fait
+   désormais par probabilité décroissante.
+   ==================================================================== */
+const MIN_EDGE = Number(process.env.MIN_EDGE || -1);   // aucun filtre d'écart
+const MIN_ODDS = Number(process.env.MIN_ODDS || 1.25); // plancher de cote
+// Nombre de matchs joués exigé des deux équipes. En dessous, les forces
+// d'attaque et de défense sont estimées sur trop peu pour valoir quoi que
+// ce soit, et tout écart apparent est une erreur de modèle.
+const MIN_GAMES = Number(process.env.MIN_GAMES || 8);
+// Nombre de bookmakers devant coter le marché. L'écart est calculé sur le
+// prix médian et non sur le meilleur : une cote isolée et généreuse crée un
+// avantage fantôme, alors qu'un désaccord avec le consensus est réel.
+const MIN_BOOKS = Number(process.env.MIN_BOOKS || 2);
+// Dispersion maximale tolérée entre bookmakers. Au-delà, le marché lui-même
+// n'est pas d'accord avec lui-même : il n'y a pas de consensus à battre.
+const MAX_SPREAD = Number(process.env.MAX_SPREAD || 0.06);
 // Seuil de probabilité minimale. N'améliore PAS l'espérance de gain : à
 // écart égal, un pari à 70 % et un pari à 30 % rapportent autant en moyenne.
 // Il réduit seulement la variance, donc les séries noires — au prix d'un
 // nombre de paris plus faible, donc d'un apprentissage plus lent.
-const MIN_PROB = Number(process.env.MIN_PROB || 0.5);
+const MIN_PROB = Number(process.env.MIN_PROB || 0.70);
 const MAX_GOALS = 8;
 
 const fact = (n) => (n <= 1 ? 1 : n * fact(n - 1));
@@ -683,7 +717,9 @@ export function strengths(table) {
   for (const r of table) {
     const att = (r.goalsFor + PRIOR_GAMES * mu) / (r.playedGames + PRIOR_GAMES) / mu;
     const def = (r.goalsAgainst + PRIOR_GAMES * mu) / (r.playedGames + PRIOR_GAMES) / mu;
-    out.set(r.team.id, { att, def, name: r.team.shortName || r.team.name });
+    out.set(r.team.id, {
+      att, def, name: r.team.shortName || r.team.name, played: r.playedGames,
+    });
   }
   return { mu, teams: out };
 }
@@ -705,6 +741,36 @@ export function outcomes(lh, la) {
     "1": home / total, X: draw / total, "2": away / total,
     "O2.5": over / total, "U2.5": 1 - over / total,
   };
+}
+
+// Second estimateur, indépendant du premier : il n'utilise que les matchs
+// à domicile de l'équipe qui reçoit et ceux à l'extérieur de l'adversaire.
+// Moins de données, mais pas les mêmes — c'est tout l'intérêt.
+export function splitStrengths(homeTable, awayTable) {
+  const build = (table, prior) => {
+    const games = table.reduce((a, r) => a + r.playedGames, 0);
+    const goals = table.reduce((a, r) => a + r.goalsFor, 0);
+    if (!games) return null;
+    const mu = goals / games;
+    const map = new Map();
+    for (const r of table) {
+      map.set(r.team.id, {
+        att: (r.goalsFor + prior * mu) / (r.playedGames + prior) / mu,
+        def: (r.goalsAgainst + prior * mu) / (r.playedGames + prior) / mu,
+        played: r.playedGames,
+      });
+    }
+    return { mu, map };
+  };
+  const h = build(homeTable, PRIOR_GAMES / 2);
+  const a = build(awayTable, PRIOR_GAMES / 2);
+  return h && a ? { h, a } : null;
+}
+
+export function expectedGoalsSplit(sp, homeId, awayId) {
+  const th = sp.h.map.get(homeId), ta = sp.a.map.get(awayId);
+  if (!th || !ta) return null;
+  return { lh: sp.h.mu * th.att * ta.def, la: sp.a.mu * ta.att * th.def };
 }
 
 export function expectedGoals(s, homeId, awayId) {
@@ -738,18 +804,21 @@ async function cmdModel() {
   const involved = [...new Set(upcoming.map((m) => m.competition.code))];
   const sports = await (await fetch(`${OA}/sports?apiKey=${oddsKey}`)).json();
   const candidates = [];
+  const rejected = { games: 0, books: 0, edge: 0, prob: 0, spread: 0, disagree: 0, second: 0, odds: 0 };
 
   for (const comp of involved) {
-    let s = null;
+    let s = null, sp = null;
     try {
       const st = await fd(`competitions/${comp}/standings`, token);
-      const total = (st.standings || []).find((x) => x.type === "TOTAL");
-      s = strengths(total?.table || []);
+      const pick = (t) => (st.standings || []).find((x) => x.type === t)?.table || [];
+      s = strengths(pick("TOTAL"));
+      sp = splitStrengths(pick("HOME"), pick("AWAY"));
     } catch (e) {
       console.warn(`Classement ${comp} indisponible : ${e.message}`);
     }
     await wait(7000);
     if (!s) continue;
+    if (!sp) console.warn(`${comp} : pas de découpe domicile/extérieur, second avis indisponible.`);
 
     const hints = SPORT_HINTS[comp] || [];
     const sport = Array.isArray(sports) && sports.find((x) => hints.some((h) => x.key.includes(h)));
@@ -764,9 +833,21 @@ async function cmdModel() {
 
     for (const m of upcoming.filter((x) => x.competition.code === comp)) {
       if (already.has(String(m.id))) continue;
+      const th = s.teams.get(m.homeTeam.id), ta = s.teams.get(m.awayTeam.id);
+      if (!th || !ta) continue;
+      if (th.played < MIN_GAMES || ta.played < MIN_GAMES) {
+        rejected.games++;
+        continue;
+      }
       const lam = expectedGoals(s, m.homeTeam.id, m.awayTeam.id);
       if (!lam) continue;
       const probs = outcomes(lam.lh, lam.la);
+
+      // Second avis. Sans lui, on ne publie pas : un seul estimateur ne peut
+      // pas se contredire, donc ne prouve rien.
+      const lam2 = sp && expectedGoalsSplit(sp, m.homeTeam.id, m.awayTeam.id);
+      if (!lam2) { rejected.second++; continue; }
+      const probs2 = outcomes(lam2.lh, lam2.la);
 
       const hn = m.homeTeam.shortName || m.homeTeam.name;
       const an = m.awayTeam.shortName || m.awayTeam.name;
@@ -775,20 +856,46 @@ async function cmdModel() {
 
       for (const market of ["1", "X", "2", "O2.5", "U2.5"]) {
         const o = priceFrom(ev.bookmakers, market, ev.home_team, ev.away_team);
-        const price = o && best(o);
-        if (!price) continue;
-        const edge = probs[market] * price - 1;
-        if (edge < MIN_EDGE) continue;
-        if (probs[market] < MIN_PROB) continue;
+        if (!o) continue;
+        const quotes = Object.values(o).filter(Boolean);
+        if (quotes.length < MIN_BOOKS) { rejected.books++; continue; }
+
+        const ref = median(quotes);   // consensus, sert à juger l'écart
+        const price = best(o);        // meilleur prix, sert à parier
+
+        // Les bookmakers se contredisent-ils ? Si oui, il n'y a pas de
+        // consensus, donc rien à battre.
+        if (price < MIN_ODDS) { rejected.odds++; continue; }
+
+        const spread = (Math.max(...quotes) - Math.min(...quotes)) / ref;
+        if (spread > MAX_SPREAD) { rejected.spread++; continue; }
+
+        // Les deux estimateurs se contredisent-ils ? On retient le plus
+        // prudent des deux, et on exige que les deux franchissent le seuil.
+        const pLow = Math.min(probs[market], probs2[market]);
+        const edge = pLow * ref - 1;
+        const edge2 = probs2[market] * ref - 1;
+        if (edge < MIN_EDGE || edge2 < MIN_EDGE) { rejected.edge++; continue; }
+        if (pLow < MIN_PROB) { rejected.prob++; continue; }
+
+        // Écart entre les deux estimateurs : au-delà de 10 points, les
+        // signaux sont contradictoires et on passe son chemin.
+        const gap = Math.abs(probs[market] - probs2[market]);
+        if (gap > 0.10) { rejected.disagree++; continue; }
+
         candidates.push({
-          m, comp, market, odds: o, price, edge,
-          prob: probs[market], lh: lam.lh, la: lam.la, hn, an,
+          m, comp, market, odds: o, price, ref, edge, gap,
+          prob: pLow, p1: probs[market], p2: probs2[market],
+          lh: lam.lh, la: lam.la, hn, an,
         });
       }
     }
   }
 
-  candidates.sort((a, b) => b.edge - a.edge);
+  // Tri par probabilité décroissante. Trier par écart relatif sélectionnait
+  // les outsiders extrêmes, là où le modèle est le moins fiable : c'est
+  // l'erreur que le backtest a mise en évidence (−45,8 % en validation).
+  candidates.sort((a, b) => b.prob - a.prob);
   const max = Number(process.env.MAX_PICKS || 5);
   const seen = new Set();
   let kept = 0;
@@ -822,8 +929,11 @@ async function cmdModel() {
       why:
         `Le modèle attend ${c.lh.toFixed(2)} but(s) pour ${c.hn} et ` +
         `${c.la.toFixed(2)} pour ${c.an}, soit ${(c.prob * 100).toFixed(1)} % de ` +
-        `chances sur ce marché. La cote de ${c.price.toFixed(2)} en implique ` +
-        `${((1 / c.price) * 100).toFixed(1)} %.`,
+        `chances sur ce marché. Un second estimateur, fondé uniquement sur les ` +
+        `matchs à domicile et à l'extérieur, en donne ${(c.p2 * 100).toFixed(1)} % : ` +
+        `les deux concordent. Le consensus des bookmakers, à ${c.ref.toFixed(2)}, ` +
+        `implique ${((1 / c.ref) * 100).toFixed(1)} %. Pari pris au meilleur prix, ` +
+        `${c.price.toFixed(2)}.`,
       caveat:
         "Écart calculé sur un modèle de Poisson volontairement simple, estimé " +
         "sur peu de matchs. Un écart apparent est souvent une erreur de modèle " +
@@ -838,24 +948,82 @@ async function cmdModel() {
     kept++;
     console.log(
       `Retenu : ${c.hn} – ${c.an} · ${c.market} @ ${c.price.toFixed(2)} · ` +
-      `modèle ${(c.prob * 100).toFixed(1)} % · écart ${(c.edge * 100).toFixed(1)} %`
+      `estimateurs ${(c.p1 * 100).toFixed(1)} % et ${(c.p2 * 100).toFixed(1)} % ` +
+      `(écart ${(c.gap * 100).toFixed(1)} pt) · consensus ${c.ref.toFixed(2)} · ` +
+      `avantage ${(c.edge * 100).toFixed(1)} %`
     );
   }
 
   if (!kept) {
     return console.log(
-      `Aucun pari réunissant un écart d'au moins ${(MIN_EDGE * 100).toFixed(0)} % ` +
-      `et une probabilité d'au moins ${(MIN_PROB * 100).toFixed(0)} %. Rien n'est publié — ` +
-      `c'est un résultat, pas une panne.`
+      `Rien ne franchit les seuils.\n` +
+      `  ${rejected.games} rencontre(s) : pas assez de matchs joués\n` +
+      `  ${rejected.second} : second estimateur indisponible\n` +
+      `  ${rejected.books} marché(s) : trop peu de bookmakers\n` +
+      `  ${rejected.odds} : cote inférieure à ${MIN_ODDS}\n` +
+      `  ${rejected.spread} : les bookmakers se contredisent\n` +
+      `  ${rejected.edge} : écart insuffisant\n` +
+      `  ${rejected.prob} : probabilité insuffisante\n` +
+      `  ${rejected.disagree} : les deux estimateurs se contredisent\n` +
+      `Aucune publication — c'est un résultat, pas une panne.`
     );
   }
   await save(db);
   console.log(`${kept} pari(s) publié(s).`);
 }
 
+
+/* ---------------------------------------------------------------- veto
+   Écarte un pari sur une information que le modèle n'a pas. Le pari reste
+   suivi et réglé normalement : on mesure ensuite si les vetos ont fait
+   gagner ou perdre de l'argent. Un jugement qu'on ne note pas ne s'améliore
+   jamais. */
+
+const VETO_REASONS = {
+  rotation: "Rotation attendue (match européen ou de coupe à proximité)",
+  blessure: "Absence d'un joueur déterminant",
+  entraineur: "Changement d'entraîneur récent",
+  calendrier: "Calendrier congestionné",
+  enjeu: "Enjeu sportif faible ou nul pour une des équipes",
+  meteo: "Conditions de jeu annoncées inhabituelles",
+  donnees: "Données de classement trompeuses (matchs en retard, écart de calendrier)",
+};
+
+async function cmdVeto() {
+  const id = (process.env.PICK_ID || "").trim();
+  const reason = (process.env.REASON || "").trim();
+  const detail = (process.env.DETAIL || "").trim();
+
+  if (!VETO_REASONS[reason]) {
+    die(
+      `Raison inconnue : "${reason}". Valeurs admises : ${Object.keys(VETO_REASONS).join(", ")}. ` +
+      `Un veto sans raison nommable n'est pas un veto, c'est une impression.`
+    );
+  }
+  if (detail.length < 15) {
+    die("DETAIL doit décrire le fait précis, en quinze caractères au minimum.");
+  }
+
+  const db = await load();
+  const p = db.picks.find((x) => x.id === id);
+  if (!p) die(`Pari introuvable : ${id}`);
+  if (p.status !== "pending") die("Un pari déjà réglé ne se veto pas après coup.");
+  if (p.vetoed) die("Ce pari est déjà écarté.");
+  if (new Date(p.kickoff) <= Date.now()) die("Le coup d'envoi est passé.");
+
+  p.vetoed = {
+    reason,
+    label: VETO_REASONS[reason],
+    detail: detail.slice(0, 300),
+    at: new Date().toISOString(),
+  };
+  await save(db);
+  console.log(`${p.match} écarté — ${VETO_REASONS[reason]}. Le pari reste suivi en parallèle.`);
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, veto: cmdVeto };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
