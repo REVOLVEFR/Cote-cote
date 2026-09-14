@@ -1,0 +1,47 @@
+name: Diagnostic
+
+# Verifie que les deux cles fonctionnent et affiche ce qui bloque.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: football-data
+        run: |
+          code=$(curl -s -o /tmp/fd.json -w "%{http_code}" \
+            -H "X-Auth-Token: ${{ secrets.FOOTBALL_DATA_TOKEN }}" \
+            "https://api.football-data.org/v4/competitions/PL/standings")
+          echo "football-data : HTTP $code"
+          if [ "$code" = "200" ]; then
+            node -e 'const d=require("/tmp/fd.json");const t=d.standings.find(s=>s.type==="TOTAL").table;
+            console.log("Matchs joues par equipe :", t.map(r=>r.playedGames).join(", "));
+            console.log("Minimum requis par la regle : 8");'
+          else
+            echo "Jeton absent ou invalide."
+          fi
+      - name: the-odds-api
+        run: |
+          code=$(curl -s -o /tmp/oa.json -w "%{http_code}" \
+            "https://api.the-odds-api.com/v4/sports/?apiKey=${{ secrets.ODDS_API_KEY }}")
+          echo "the-odds-api : HTTP $code"
+          if [ "$code" = "200" ]; then
+            node -e 'const s=require("/tmp/oa.json");
+            console.log("Sports disponibles :", s.length);
+            console.log("MMA present :", s.some(x=>x.key==="mma_mixed_martial_arts"));
+            console.log("Football europeen :", s.filter(x=>x.key.startsWith("soccer_")&&x.active).length, "competitions actives");'
+          else
+            echo "Cle absente ou invalide."
+          fi
+      - name: etat du registre
+        run: |
+          node -e 'const d=require("./data/picks.json");
+          console.log("Paris enregistres :", d.picks.length);
+          const s={}; for(const p of d.picks) s[p.status]=(s[p.status]||0)+1;
+          console.log("Par statut :", JSON.stringify(s));'
