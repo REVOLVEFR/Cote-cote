@@ -116,7 +116,7 @@ function measures(picks) {
 
   return {
     n, units, roi, roiReal, ci, bankReal, bankFlat, meanOdds, drawdown, worstStreak,
-    real, flat,
+    real, flat, gains,
     winrate: n ? (done.filter((p) => p.status === "won").length / n) * 100 : null,
     required, clv, clvN: clvs.length,
     beat: clvs.length ? (clvs.filter((x) => x > 0).length / clvs.length) * 100 : null,
@@ -394,64 +394,85 @@ async function viewRecord() {
 }
 
 /* --------------------------------------------------------------- projection
-   Simulation de Monte-Carlo. L'hypothèse d'avantage est un paramètre que
-   l'utilisateur choisit : le site ne prétend pas la connaître. */
+   Deux régimes. Avec assez de paris réglés, on projette par rééchantillonnage
+   des résultats observés — ce qui propage l'incertitude au lieu de la masquer.
+   Sinon, on retombe sur une hypothèse explicite. */
 
-function simulate({ bets, edge, odds, stakePct, runs = 1200 }) {
-  const p = (1 + edge) / odds;          // probabilité de gain impliquée par l'hypothèse
+const MIN_FOR_BOOTSTRAP = 10;
+
+function pickFrom(arr) {
+  return arr[(Math.random() * arr.length) | 0];
+}
+
+// Rendement nécessaire pour passer du capital de départ à l'objectif.
+function requiredRoi(target, bets, stakePct) {
+  return ((target - CAPITAL) / (bets * CAPITAL * stakePct)) * 100;
+}
+
+function project({ bets, stakePct, target, gains, edge, odds, runs = 1200 }) {
   const stake = CAPITAL * stakePct;
-  const win = stake * (odds - 1);
   const steps = Math.min(bets, 40);
   const every = bets / steps;
   const checkpoints = Array.from({ length: steps + 1 }, (_, k) => Math.round(k * every));
   const grid = checkpoints.map(() => new Float64Array(runs));
+  const p = gains ? null : (1 + edge) / odds;
+  const win = gains ? null : stake * (odds - 1);
 
   for (let r = 0; r < runs; r++) {
+    // Bootstrap à deux étages : on tire d'abord un échantillon plausible de
+    // l'historique, puis on tire l'avenir dedans. Le premier étage porte
+    // l'incertitude sur l'avantage, le second celle des résultats.
+    const pseudo = gains ? Array.from({ length: gains.length }, () => pickFrom(gains)) : null;
     let bank = CAPITAL, c = 0;
     grid[0][r] = CAPITAL;
     for (let i = 1; i <= bets; i++) {
-      bank += Math.random() < p ? win : -stake;
+      bank += pseudo
+        ? pickFrom(pseudo) * stake
+        : Math.random() < p ? win : -stake;
       if (i === checkpoints[c + 1]) grid[++c][r] = bank;
     }
   }
 
-  const quant = (arr, q) => {
-    const s = Float64Array.from(arr).sort();
-    return s[Math.min(s.length - 1, Math.floor(q * s.length))];
+  const quant = (col, q) => {
+    const t = Float64Array.from(col).sort();
+    return t[Math.min(t.length - 1, Math.floor(q * t.length))];
   };
   const band = grid.map((col, k) => ({
-    i: checkpoints[k],
-    p5: quant(col, 0.05),
-    p50: quant(col, 0.5),
-    p95: quant(col, 0.95),
+    i: checkpoints[k], p5: quant(col, 0.05), p50: quant(col, 0.5), p95: quant(col, 0.95),
   }));
-  const last = grid[grid.length - 1];
-  const above = Array.from(last).filter((v) => v > CAPITAL).length / runs;
-  return { band, above, final: band[band.length - 1] };
+  const last = Array.from(grid[grid.length - 1]);
+  return {
+    band,
+    final: band[band.length - 1],
+    above: last.filter((v) => v > CAPITAL).length / runs,
+    reach: last.filter((v) => v >= target).length / runs,
+  };
 }
 
-function fanChart(band) {
-  const W = 700, H = 250, L = 54, R = 12, T = 14, B = 24;
-  const vals = band.flatMap((b) => [b.p5, b.p95]).concat([CAPITAL]);
+function fanChart(band, target) {
+  const W = 700, H = 250, L = 58, R = 12, T = 14, B = 24;
+  const vals = band.flatMap((b) => [b.p5, b.p95]).concat([CAPITAL, target]);
   const lo = Math.min(...vals), hi = Math.max(...vals);
   const pad = (hi - lo) * 0.1 || 50;
   const y = (v) => T + ((hi + pad - v) / (hi - lo + 2 * pad)) * (H - T - B);
   const maxI = band[band.length - 1].i;
   const x = (i) => L + (i / maxI) * (W - L - R);
   const area =
-    band.map((b) => `${x(b.i).toFixed(1)},${y(b.p95).toFixed(1)}`).join(" ") +
-    " " +
+    band.map((b) => `${x(b.i).toFixed(1)},${y(b.p95).toFixed(1)}`).join(" ") + " " +
     band.slice().reverse().map((b) => `${x(b.i).toFixed(1)},${y(b.p5).toFixed(1)}`).join(" ");
   const median = band.map((b) => `${x(b.i).toFixed(1)},${y(b.p50).toFixed(1)}`).join(" ");
   const marks = [hi + pad, CAPITAL, lo - pad]
     .map((v) => `<text x="${L - 8}" y="${y(v) + 4}" text-anchor="end"
-      font-size="11" fill="#6E6E76">${v.toFixed(0)} €</text>`)
-    .join("");
+      font-size="11" fill="#6E6E76">${v.toFixed(0)} €</text>`).join("");
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img"
       aria-label="Projection du capital, fourchette à 90 %">
     <polygon points="${area}" fill="rgba(29,78,74,.13)"/>
     <line x1="${L}" y1="${y(CAPITAL)}" x2="${W - R}" y2="${y(CAPITAL)}"
       stroke="#16161A" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="${L}" y1="${y(target)}" x2="${W - R}" y2="${y(target)}"
+      stroke="#1D4E4A" stroke-width="1.2"/>
+    <text x="${W - R}" y="${y(target) - 6}" text-anchor="end" font-size="11"
+      fill="#1D4E4A">objectif ${target} €</text>
     ${marks}
     <polyline points="${median}" fill="none" stroke="#1D4E4A" stroke-width="2"/>
     <text x="${L}" y="${H - 6}" font-size="11" fill="#6E6E76">0</text>
@@ -460,67 +481,103 @@ function fanChart(band) {
   </svg>`;
 }
 
+let PROJ_STATS = null;
+
 function drawProjection() {
   const val = (id) => Number(document.getElementById(id).value);
   const bets = val("pj-bets");
-  const edge = val("pj-edge") / 100;
-  const odds = val("pj-odds");
+  const target = val("pj-target");
   const stakePct = val("pj-stake") / 100;
-  const r = simulate({ bets, edge, odds, stakePct });
+  const mode = document.getElementById("pj-mode").value;
 
-  document.getElementById("pj-chart").innerHTML = fanChart(r.band);
+  const useResults = mode === "results" && PROJ_STATS.n >= MIN_FOR_BOOTSTRAP;
+  const r = project({
+    bets, stakePct, target,
+    gains: useResults ? PROJ_STATS.gains : null,
+    edge: mode === "results" ? -0.05 : Number(mode) / 100,
+    odds: PROJ_STATS.meanOdds || 2,
+  });
+
+  const need = requiredRoi(target, bets, stakePct);
+  const verdict =
+    need <= 5
+      ? "C'est dans l'ordre de grandeur de ce qu'atteignent les meilleurs parieurs professionnels sur la durée."
+      : need <= 15
+      ? "Nettement au-dessus de ce que réalisent les parieurs professionnels réguliers. Atteignable ponctuellement par chance, pas durablement."
+      : "Hors de portée d'un avantage réel. Un tel rendement sur cette durée relèverait du coup de chance, pas de la méthode.";
+
+  document.getElementById("pj-need").innerHTML = `
+    <div class="verdict"><h2>Il faudrait un rendement de ${pc(need)}</h2>
+      <p>Pour passer de ${eur(CAPITAL, 0)} à ${eur(target, 0)} en ${bets} paris
+         à ${(stakePct * 100).toFixed(0)} % de mise. ${verdict}</p></div>`;
+
+  document.getElementById("pj-source").textContent = useResults
+    ? `Projection tirée des ${PROJ_STATS.n} paris déjà réglés, par rééchantillonnage.`
+    : mode === "results"
+    ? `Pas encore assez de paris réglés (${PROJ_STATS.n} sur ${MIN_FOR_BOOTSTRAP} nécessaires). Affichage sur l'hypothèse par défaut : la marge du bookmaker.`
+    : `Projection sur hypothèse choisie, sans lien avec les résultats réels.`;
+
+  document.getElementById("pj-chart").innerHTML = fanChart(r.band, target);
   document.getElementById("pj-out").innerHTML = `
     <div class="kpis">
+      <div class="kpi"><div class="k">Probabilité d'atteindre l'objectif</div>
+        <div class="v num">${(r.reach * 100).toFixed(0)} %</div>
+        <div class="s">${eur(target, 0)} après ${bets} paris</div></div>
       <div class="kpi"><div class="k">Scénario médian</div>
         <div class="v num">${eur(r.final.p50, 0)}</div>
-        <div class="s">après ${bets} paris</div></div>
+        <div class="s">la moitié des trajectoires font mieux</div></div>
       <div class="kpi"><div class="k">Fourchette à 90 %</div>
         <div class="v num">${eur(r.final.p5, 0)} – ${eur(r.final.p95, 0)}</div>
         <div class="s">9 scénarios sur 10</div></div>
       <div class="kpi"><div class="k">Probabilité d'être gagnant</div>
         <div class="v num">${(r.above * 100).toFixed(0)} %</div>
-        <div class="s">capital au-dessus de ${eur(CAPITAL, 0)}</div></div>
+        <div class="s">au-dessus de ${eur(CAPITAL, 0)}</div></div>
     </div>`;
 }
 
 async function viewProjection() {
+  const { picks } = await db();
+  PROJ_STATS = measures(picks);
+
   app.innerHTML = `<div class="lede"><h1>Projection</h1>
-      <p>Ce que deviendrait ${eur(CAPITAL, 0)} sur la durée, selon l'avantage
-         qu'on suppose. Le site ne connaît pas cet avantage : c'est à toi de
-         poser l'hypothèse, et d'en voir les conséquences.</p></div>
+      <p>Fixe un objectif et un horizon : le site calcule le rendement qu'il
+         faudrait tenir, puis simule 1 200 trajectoires à partir des résultats
+         déjà obtenus.</p></div>
 
     <div class="controls">
-      <div><label for="pj-bets">Nombre de paris</label>
-        <select id="pj-bets"><option>50</option><option selected>200</option>
+      <div><label for="pj-target">Objectif</label>
+        <select id="pj-target"><option value="1200">1 200 €</option>
+          <option value="1500" selected>1 500 €</option>
+          <option value="2000">2 000 €</option>
+          <option value="3000">3 000 €</option></select></div>
+      <div><label for="pj-bets">Horizon</label>
+        <select id="pj-bets"><option>100</option><option selected>200</option>
           <option>500</option><option>1000</option></select></div>
-      <div><label for="pj-edge">Avantage supposé</label>
-        <select id="pj-edge">
-          <option value="-5" selected>−5 % (marge du bookmaker)</option>
-          <option value="-2">−2 %</option>
-          <option value="0">0 % (marché parfait)</option>
-          <option value="2">+2 %</option>
-          <option value="5">+5 %</option>
-        </select></div>
-      <div><label for="pj-odds">Cote moyenne</label>
-        <select id="pj-odds"><option>1.60</option><option selected>2.00</option>
-          <option>2.50</option><option>3.50</option></select></div>
       <div><label for="pj-stake">Mise</label>
         <select id="pj-stake"><option value="1" selected>1 %</option>
           <option value="2">2 %</option></select></div>
+      <div><label for="pj-mode">Base de calcul</label>
+        <select id="pj-mode">
+          <option value="results" selected>Mes résultats réels</option>
+          <option value="-5">Hypothèse : −5 % (marge du bookmaker)</option>
+          <option value="0">Hypothèse : 0 %</option>
+          <option value="3">Hypothèse : +3 %</option>
+        </select></div>
     </div>
 
+    <div id="pj-need"></div>
     <div id="pj-chart" class="sec"></div>
     <div id="pj-out"></div>
+    <p class="note" id="pj-source"></p>
+    <p class="note">La bande couvre 90 % des trajectoires, la ligne pleine est le
+      scénario médian. Plus le nombre de paris réglés est faible, plus la bande
+      est large : c'est l'incertitude réelle, pas un défaut d'affichage.</p>
+    <p class="note">Le rendement requis est de l'arithmétique, pas une prévision :
+      doubler ${eur(CAPITAL, 0)} en 200 paris à 1 % de mise exige +50 % de
+      rendement, quand les parieurs professionnels réguliers évoluent plutôt
+      entre +2 et +5 %.</p>`;
 
-    <p class="note">La bande couvre 90 % des trajectoires simulées, la ligne
-      pleine est le scénario médian. Le réglage par défaut est le plus probable
-      en l'absence d'avantage démontré : la marge du bookmaker est le résultat
-      attendu par défaut, pas le pire cas.</p>
-    <p class="note">Cette projection suppose des paris indépendants à cote
-      constante. La réalité est plus irrégulière : elle donne un ordre de
-      grandeur du risque, pas une prévision.</p>`;
-
-  ["pj-bets", "pj-edge", "pj-odds", "pj-stake"].forEach((id) =>
+  ["pj-target", "pj-bets", "pj-stake", "pj-mode"].forEach((id) =>
     document.getElementById(id).addEventListener("change", drawProjection)
   );
   drawProjection();
