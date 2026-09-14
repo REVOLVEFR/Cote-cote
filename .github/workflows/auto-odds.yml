@@ -1,0 +1,32 @@
+name: Relever les cotes
+
+on:
+  schedule:
+    - cron: "0 7,19 * * *"   # deux fois par jour, pour rester dans les 500 credits
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  odds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs autoodds
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+      - name: Commiter les cotes
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git diff --staged --quiet || git commit -m "Cotes relevees automatiquement"
+          git push
