@@ -194,6 +194,10 @@ function card(p) {
     ${heading(p)}
     <div class="bet">${esc(p.label)}</div>
     ${legList(p)}
+    ${p.modelProb ? `<p class="prob">Le modèle donne
+      <strong>${(p.modelProb * 100).toFixed(1)} %</strong> de chances à ce pari.
+      Vérifiable : sur la durée, les paris annoncés à ce niveau doivent passer
+      à peu près aussi souvent.</p>` : ""}
     ${p.why ? `<p class="why">${esc(p.why)}</p>` : ""}
     ${p.caveat ? `<p class="cav">Ce qui peut le faire échouer : ${esc(p.caveat)}</p>` : ""}
     ${oddsBlock(p)}
