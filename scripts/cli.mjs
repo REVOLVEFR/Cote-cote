@@ -6,6 +6,7 @@
 //   node scripts/cli.mjs add       publie un pari (entrées via variables d'env)
 //   node scripts/cli.mjs odds      enregistre des cotes
 //   node scripts/cli.mjs manual    règle à la main un pari non décidable
+//   node scripts/cli.mjs fixtures  liste les match_id d'une journée
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -335,9 +336,46 @@ async function cmdManual() {
   console.log(`${p.match} réglé à la main : ${status}`);
 }
 
+
+/* ------------------------------------------------------- liste des matchs
+   Affiche les identifiants football-data d'une journée, pour pouvoir les
+   coller au moment de publier un pari. */
+
+async function cmdFixtures() {
+  const token = process.env.FOOTBALL_DATA_TOKEN;
+  if (!token) die("FOOTBALL_DATA_TOKEN absent des secrets du dépôt.");
+  const comp = (process.env.COMP || "").trim();
+  if (!COMPETITIONS[comp]) die(`Championnat inconnu : ${comp}`);
+
+  const md = (process.env.MATCHDAY || "").trim();
+  const days = Number(process.env.DAYS || 10);
+  const url = md
+    ? `https://api.football-data.org/v4/competitions/${comp}/matches?matchday=${md}`
+    : `https://api.football-data.org/v4/competitions/${comp}/matches` +
+      `?dateFrom=${new Date().toISOString().slice(0, 10)}` +
+      `&dateTo=${new Date(Date.now() + days * 864e5).toISOString().slice(0, 10)}`;
+
+  const r = await fetch(url, { headers: { "X-Auth-Token": token } });
+  if (!r.ok) die(`football-data a répondu ${r.status}`);
+  const matches = (await r.json()).matches || [];
+  if (!matches.length) return console.log("Aucun match sur cette période.");
+
+  console.log(`\n${COMPETITIONS[comp]} — ${matches.length} match(s)\n`);
+  console.log("match_id   | coup d'envoi (UTC)   | rencontre");
+  console.log("-".repeat(72));
+  for (const m of matches) {
+    const h = m.homeTeam.shortName || m.homeTeam.name;
+    const a = m.awayTeam.shortName || m.awayTeam.name;
+    console.log(
+      `${String(m.id).padEnd(10)} | ${m.utcDate.slice(0, 16).replace("T", " ")}     | ${h} – ${a}`
+    );
+  }
+  console.log("");
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
