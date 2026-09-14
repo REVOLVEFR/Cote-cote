@@ -7,6 +7,8 @@
 //   node scripts/cli.mjs odds      enregistre des cotes
 //   node scripts/cli.mjs manual    règle à la main un pari non décidable
 //   node scripts/cli.mjs fixtures  liste les match_id d'une journée
+//   node scripts/cli.mjs propose   sélectionne et publie via l'API Anthropic
+//   node scripts/cli.mjs autoodds  relève les cotes chez The Odds API
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -373,9 +375,285 @@ async function cmdFixtures() {
   console.log("");
 }
 
+
+/* ------------------------------------------------------ proposition auto
+   Appelle l'API Anthropic avec le calendrier et les classements, puis publie
+   les paris retenus. Tout ce que le modèle renvoie est revalidé ici : un
+   identifiant inventé ou un marché inconnu est rejeté, pas publié. */
+
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const MAX_PICKS = Number(process.env.MAX_PICKS || 5);
+const VALID_MARKET = /^(1|X|2|[OU]2\.5)$/;
+
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function fd(path, token) {
+  const r = await fetch(`https://api.football-data.org/v4/${path}`, {
+    headers: { "X-Auth-Token": token },
+  });
+  if (!r.ok) throw new Error(`football-data ${path} → ${r.status}`);
+  return r.json();
+}
+
+async function cmdPropose() {
+  const token = process.env.FOOTBALL_DATA_TOKEN;
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!token) die("FOOTBALL_DATA_TOKEN absent.");
+  if (!key) die("ANTHROPIC_API_KEY absente des secrets du dépôt.");
+
+  const codes = Object.keys(COMPETITIONS);
+  const days = Number(process.env.HORIZON_DAYS || 8);
+  const from = new Date().toISOString().slice(0, 10);
+  const to = new Date(Date.now() + days * 864e5).toISOString().slice(0, 10);
+
+  const { matches = [] } = await fd(
+    `matches?competitions=${codes.join(",")}&dateFrom=${from}&dateTo=${to}`,
+    token
+  );
+  const upcoming = matches.filter((m) => m.status === "TIMED" || m.status === "SCHEDULED");
+  if (!upcoming.length) return console.log("Aucun match programmé sur la fenêtre.");
+  console.log(`${upcoming.length} match(s) sur ${days} jours.`);
+
+  // Classements des seules compétitions concernées. 10 requêtes/min au maximum
+  // sur le palier gratuit : on espace.
+  const involved = [...new Set(upcoming.map((m) => m.competition.code))];
+  const tables = {};
+  for (const c of involved) {
+    try {
+      const st = await fd(`competitions/${c}/standings`, token);
+      const total = (st.standings || []).find((s) => s.type === "TOTAL");
+      tables[c] = (total?.table || []).map((r) =>
+        `${r.position}. ${r.team.shortName || r.team.name} — ${r.points} pts, ` +
+        `${r.playedGames}j, ${r.won}V ${r.draw}N ${r.lost}D, ${r.goalsFor}:${r.goalsAgainst}`
+      ).join("\n");
+    } catch (e) {
+      console.warn(`Classement ${c} indisponible : ${e.message}`);
+    }
+    await wait(7000);
+  }
+
+  const fixtures = upcoming
+    .map((m) =>
+      `${m.id} | ${m.competition.code} | ${m.utcDate} | ` +
+      `${m.homeTeam.shortName || m.homeTeam.name} – ${m.awayTeam.shortName || m.awayTeam.name}`
+    )
+    .join("\n");
+
+  const prompt = `Tu sélectionnes des paris sportifs pour un suivi public dont le but est de mesurer honnêtement s'il existe un avantage face au marché.
+
+Contraintes strictes :
+- Au plus ${MAX_PICKS} paris, et moins si rien ne se détache. Ne rien proposer est une réponse valable.
+- Uniquement ces marchés, les seuls dont la cote est relevable automatiquement : 1, X, 2, O2.5, U2.5.
+- Pas de combinés.
+- Utilise uniquement les identifiants de la liste ci-dessous.
+- Ne choisis pas une rencontre uniquement parce qu'elle est prestigieuse : les gros matchs ont les marchés les plus efficients.
+- Pour chaque pari, indique honnêtement ce qui pourrait le faire échouer.
+
+Calendrier (id | compétition | date UTC | rencontre) :
+${fixtures}
+
+Classements :
+${Object.entries(tables).map(([c, t]) => `--- ${COMPETITIONS[c]} ---\n${t}`).join("\n\n")}
+
+Réponds uniquement par un tableau JSON, sans texte autour, sans balises de code :
+[{"matchId":"123","market":"U2.5","label":"Moins de 2,5 buts","why":"...","caveat":"..."}]`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 2000,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+  if (!res.ok) die(`API Anthropic → ${res.status} ${await res.text()}`);
+
+  const raw = (await res.json()).content
+    .filter((b) => b.type === "text").map((b) => b.text).join("")
+    .replace(/```json|```/g, "").trim();
+
+  let proposed;
+  try {
+    proposed = JSON.parse(raw);
+  } catch {
+    die(`Réponse illisible : ${raw.slice(0, 300)}`);
+  }
+  if (!Array.isArray(proposed)) die("La réponse n'est pas un tableau.");
+
+  // Revalidation : rien n'est publié sur la seule parole du modèle.
+  const byId = new Map(upcoming.map((m) => [String(m.id), m]));
+  const db = await load();
+  const already = new Set(db.picks.map((p) => String(p.matchId)));
+  let kept = 0;
+
+  for (const c of proposed.slice(0, MAX_PICKS)) {
+    const m = byId.get(String(c.matchId));
+    if (!m) { console.warn(`Rejeté : identifiant ${c.matchId} hors calendrier.`); continue; }
+    const market = String(c.market || "").toUpperCase();
+    if (!VALID_MARKET.test(market)) { console.warn(`Rejeté : marché ${market}.`); continue; }
+    if (already.has(String(m.id))) { console.warn(`Rejeté : ${m.id} déjà suivi.`); continue; }
+    if (new Date(m.utcDate) <= Date.now()) { console.warn(`Rejeté : ${m.id} déjà commencé.`); continue; }
+
+    const home = { name: m.homeTeam.shortName || m.homeTeam.name, crest: m.homeTeam.crest || null };
+    const away = { name: m.awayTeam.shortName || m.awayTeam.name, crest: m.awayTeam.crest || null };
+    db.picks.push({
+      id: "p" + Date.now().toString(36) + kept,
+      publishedAt: new Date().toISOString(),
+      comp: m.competition.code,
+      match: `${home.name} – ${away.name}`,
+      market,
+      legs: null,
+      label: String(c.label || market).slice(0, 80),
+      kickoff: m.utcDate,
+      matchId: String(m.id),
+      teams: { home, away },
+      stakePct: 0.01,
+      why: String(c.why || "").slice(0, 500),
+      caveat: String(c.caveat || "").slice(0, 500),
+      odds: null, oddsTaken: null, oddsClose: null,
+      status: "pending", score: null, auto: true,
+    });
+    already.add(String(m.id));
+    kept++;
+    console.log(`Retenu : ${home.name} – ${away.name} · ${market}`);
+  }
+
+  if (!kept) return console.log("Aucun pari retenu cette semaine.");
+  await save(db);
+  console.log(`${kept} pari(s) publié(s).`);
+}
+
+
+/* ---------------------------------------------------- cotes automatiques
+   The Odds API, palier gratuit. Region "eu" : Betclic, Unibet et consorts.
+   Un credit par marche et par region, d'ou l'appel cible sur les seuls
+   championnats ayant un pari en attente. */
+
+const OA = "https://api.the-odds-api.com/v4";
+const WANT_BOOKS = { betclic: "betclic_fr", unibet: "unibet_eu", winamax: "winamax_fr" };
+const CLOSE_WINDOW_MIN = Number(process.env.CLOSE_WINDOW_MIN || 150);
+
+// Indices permettant de retrouver la cle de sport, plutot que de la coder en
+// dur : l'API expose la liste, autant s'y fier.
+const SPORT_HINTS = {
+  PL: ["epl", "premier_league"], PD: ["spain_la_liga"], BL1: ["germany_bundesliga"],
+  SA: ["italy_serie_a"], FL1: ["france_ligue_one"], DED: ["netherlands_eredivisie"],
+  PPL: ["portugal_primeira_liga"], ELC: ["efl_champ"], BSA: ["brazil_campeonato"],
+  CL: ["uefa_champs_league"], EC: ["uefa_european_championship"], WC: ["fifa_world_cup"],
+};
+
+const norm = (s) =>
+  String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    .replace(/\b(fc|ac|as|sc|cf|afc|rc|ss|us|sv|vfl|vfb|bsc|calcio|club|de|the)\b/g, "")
+    .replace(/[^a-z0-9]/g, "");
+
+// Deux noms designent la meme equipe si l'un contient l'autre une fois
+// normalises. Suffisant pour "Tottenham" contre "Tottenham Hotspur".
+function sameTeam(a, b) {
+  const x = norm(a), y = norm(b);
+  if (!x || !y) return false;
+  return x === y || x.includes(y) || y.includes(x);
+}
+
+function priceFrom(bk, market, homeName, awayName) {
+  const out = {};
+  for (const [label, key] of Object.entries(WANT_BOOKS)) {
+    const b = (bk || []).find((x) => x.key === key);
+    if (!b) { out[label] = null; continue; }
+    let price = null;
+    const m = String(market).toUpperCase();
+    const ou = m.match(/^([OU])(\d+(?:\.\d+)?)$/);
+    if (ou) {
+      const mk = b.markets.find((x) => x.key === "totals");
+      const side = ou[1] === "O" ? "Over" : "Under";
+      const line = parseFloat(ou[2]);
+      const o = mk?.outcomes.find((x) => x.name === side && Number(x.point) === line);
+      price = o?.price ?? null;
+    } else {
+      const mk = b.markets.find((x) => x.key === "h2h");
+      const target = m === "1" ? homeName : m === "2" ? awayName : "Draw";
+      const o = mk?.outcomes.find((x) =>
+        m === "X" ? x.name === "Draw" : sameTeam(x.name, target)
+      );
+      price = o?.price ?? null;
+    }
+    out[label] = price;
+  }
+  return Object.values(out).some(Boolean) ? out : null;
+}
+
+async function cmdAutoOdds() {
+  const key = process.env.ODDS_API_KEY;
+  if (!key) die("ODDS_API_KEY absente des secrets du dépôt.");
+
+  const db = await load();
+  const pending = db.picks.filter((p) => p.status === "pending" && !p.legs && p.matchId);
+  if (!pending.length) return console.log("Aucun pari en attente.");
+
+  // On ne relève que ce qui sert : cote d'ouverture manquante, ou clôture
+  // imminente. Sinon on ne dépense pas de crédit.
+  const need = pending.filter((p) => {
+    const mins = (new Date(p.kickoff) - Date.now()) / 60000;
+    if (mins <= 0) return false;
+    return !p.oddsTaken || mins <= CLOSE_WINDOW_MIN;
+  });
+  if (!need.length) return console.log("Rien à relever pour l'instant.");
+
+  const sports = await (await fetch(`${OA}/sports?apiKey=${key}`)).json(); // gratuit
+  if (!Array.isArray(sports)) die(`Liste des sports illisible : ${JSON.stringify(sports).slice(0, 200)}`);
+
+  const comps = [...new Set(need.map((p) => p.comp))];
+  let updated = 0;
+
+  for (const comp of comps) {
+    const hints = SPORT_HINTS[comp] || [];
+    const sport = sports.find((s) => hints.some((h) => s.key.includes(h)));
+    if (!sport) { console.warn(`Aucune clé de sport pour ${comp}.`); continue; }
+
+    const url =
+      `${OA}/sports/${sport.key}/odds?apiKey=${key}&regions=eu` +
+      `&markets=h2h,totals&oddsFormat=decimal`;
+    const res = await fetch(url);
+    if (!res.ok) { console.warn(`${sport.key} → ${res.status}`); continue; }
+    console.log(`${sport.key} · crédits restants : ${res.headers.get("x-requests-remaining")}`);
+    const events = await res.json();
+
+    for (const p of need.filter((x) => x.comp === comp)) {
+      const h = p.teams?.home?.name, a = p.teams?.away?.name;
+      const ev = events.find(
+        (e) => sameTeam(e.home_team, h || "") && sameTeam(e.away_team, a || "")
+      );
+      if (!ev) { console.warn(`Pas d'événement pour ${p.match}.`); continue; }
+
+      const o = priceFrom(ev.bookmakers, p.market, ev.home_team, ev.away_team);
+      if (!o) { console.warn(`Marché ${p.market} absent pour ${p.match}.`); continue; }
+
+      p.odds = o;
+      const mins = (new Date(p.kickoff) - Date.now()) / 60000;
+      if (!p.oddsTaken) {
+        p.oddsTaken = best(o);
+        console.log(`${p.match} · cote du pari ${p.oddsTaken}`);
+      }
+      if (mins <= CLOSE_WINDOW_MIN) {
+        p.oddsClose = best(o);
+        console.log(`${p.match} · cote de clôture ${p.oddsClose}`);
+      }
+      updated++;
+    }
+  }
+
+  if (updated) await save(db);
+  console.log(`${updated} pari(s) mis à jour.`);
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
