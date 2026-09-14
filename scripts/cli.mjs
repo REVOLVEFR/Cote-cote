@@ -9,6 +9,7 @@
 //   node scripts/cli.mjs fixtures  liste les match_id d'une journée
 //   node scripts/cli.mjs propose   sélectionne et publie via l'API Anthropic
 //   node scripts/cli.mjs autoodds  relève les cotes chez The Odds API
+//   node scripts/cli.mjs model     sélectionne par modèle de Poisson (sans LLM)
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -651,9 +652,210 @@ async function cmdAutoOdds() {
   console.log(`${updated} pari(s) mis à jour.`);
 }
 
+
+/* ------------------------------------------------------- modèle de Poisson
+   Estime une force d'attaque et de défense par équipe à partir des buts
+   marqués et encaissés, en ramenant fortement vers la moyenne du championnat
+   tant que peu de matchs ont été joués. En déduit une loi de Poisson sur le
+   score, donc une probabilité pour chaque issue. Ne parie que là où cette
+   probabilité dépasse nettement celle qu'implique la cote. */
+
+const PRIOR_GAMES = 6;      // poids du a priori : 6 matchs fictifs à la moyenne
+const HOME_ADV = 1.12;      // multiplicateur des buts attendus à domicile
+const MIN_EDGE = Number(process.env.MIN_EDGE || 0.08);
+// Seuil de probabilité minimale. N'améliore PAS l'espérance de gain : à
+// écart égal, un pari à 70 % et un pari à 30 % rapportent autant en moyenne.
+// Il réduit seulement la variance, donc les séries noires — au prix d'un
+// nombre de paris plus faible, donc d'un apprentissage plus lent.
+const MIN_PROB = Number(process.env.MIN_PROB || 0.5);
+const MAX_GOALS = 8;
+
+const fact = (n) => (n <= 1 ? 1 : n * fact(n - 1));
+const pois = (k, lambda) => (Math.exp(-lambda) * lambda ** k) / fact(k);
+
+// Forces relatives, ramenées vers 1 proportionnellement au manque de données.
+export function strengths(table) {
+  const games = table.reduce((a, r) => a + r.playedGames, 0);
+  const goals = table.reduce((a, r) => a + r.goalsFor, 0);
+  if (!games) return null;
+  const mu = goals / games; // buts par équipe et par match dans le championnat
+  const out = new Map();
+  for (const r of table) {
+    const att = (r.goalsFor + PRIOR_GAMES * mu) / (r.playedGames + PRIOR_GAMES) / mu;
+    const def = (r.goalsAgainst + PRIOR_GAMES * mu) / (r.playedGames + PRIOR_GAMES) / mu;
+    out.set(r.team.id, { att, def, name: r.team.shortName || r.team.name });
+  }
+  return { mu, teams: out };
+}
+
+// Probabilités des issues, à partir des deux espérances de buts.
+export function outcomes(lh, la) {
+  const ph = Array.from({ length: MAX_GOALS + 1 }, (_, k) => pois(k, lh));
+  const pa = Array.from({ length: MAX_GOALS + 1 }, (_, k) => pois(k, la));
+  let home = 0, draw = 0, away = 0, over = 0;
+  for (let i = 0; i <= MAX_GOALS; i++) {
+    for (let j = 0; j <= MAX_GOALS; j++) {
+      const p = ph[i] * pa[j];
+      if (i > j) home += p; else if (i === j) draw += p; else away += p;
+      if (i + j > 2.5) over += p;
+    }
+  }
+  const total = home + draw + away;
+  return {
+    "1": home / total, X: draw / total, "2": away / total,
+    "O2.5": over / total, "U2.5": 1 - over / total,
+  };
+}
+
+export function expectedGoals(s, homeId, awayId) {
+  const h = s.teams.get(homeId), a = s.teams.get(awayId);
+  if (!h || !a) return null;
+  return {
+    lh: s.mu * h.att * a.def * HOME_ADV,
+    la: s.mu * a.att * h.def / HOME_ADV,
+  };
+}
+
+async function cmdModel() {
+  const token = process.env.FOOTBALL_DATA_TOKEN;
+  const oddsKey = process.env.ODDS_API_KEY;
+  if (!token) die("FOOTBALL_DATA_TOKEN absent.");
+  if (!oddsKey) die("ODDS_API_KEY absente. Le modèle ne parie que contre une cote.");
+
+  const codes = Object.keys(COMPETITIONS);
+  const days = Number(process.env.HORIZON_DAYS || 8);
+  const from = new Date().toISOString().slice(0, 10);
+  const to = new Date(Date.now() + days * 864e5).toISOString().slice(0, 10);
+
+  const { matches = [] } = await fd(
+    `matches?competitions=${codes.join(",")}&dateFrom=${from}&dateTo=${to}`, token
+  );
+  const upcoming = matches.filter((m) => m.status === "TIMED" || m.status === "SCHEDULED");
+  if (!upcoming.length) return console.log("Aucun match programmé.");
+
+  const db = await load();
+  const already = new Set(db.picks.map((p) => String(p.matchId)));
+  const involved = [...new Set(upcoming.map((m) => m.competition.code))];
+  const sports = await (await fetch(`${OA}/sports?apiKey=${oddsKey}`)).json();
+  const candidates = [];
+
+  for (const comp of involved) {
+    let s = null;
+    try {
+      const st = await fd(`competitions/${comp}/standings`, token);
+      const total = (st.standings || []).find((x) => x.type === "TOTAL");
+      s = strengths(total?.table || []);
+    } catch (e) {
+      console.warn(`Classement ${comp} indisponible : ${e.message}`);
+    }
+    await wait(7000);
+    if (!s) continue;
+
+    const hints = SPORT_HINTS[comp] || [];
+    const sport = Array.isArray(sports) && sports.find((x) => hints.some((h) => x.key.includes(h)));
+    if (!sport) { console.warn(`Pas de clé de sport pour ${comp}.`); continue; }
+
+    const res = await fetch(
+      `${OA}/sports/${sport.key}/odds?apiKey=${oddsKey}&regions=eu&markets=h2h,totals&oddsFormat=decimal`
+    );
+    if (!res.ok) { console.warn(`Cotes ${sport.key} → ${res.status}`); continue; }
+    console.log(`${sport.key} · crédits restants : ${res.headers.get("x-requests-remaining")}`);
+    const events = await res.json();
+
+    for (const m of upcoming.filter((x) => x.competition.code === comp)) {
+      if (already.has(String(m.id))) continue;
+      const lam = expectedGoals(s, m.homeTeam.id, m.awayTeam.id);
+      if (!lam) continue;
+      const probs = outcomes(lam.lh, lam.la);
+
+      const hn = m.homeTeam.shortName || m.homeTeam.name;
+      const an = m.awayTeam.shortName || m.awayTeam.name;
+      const ev = events.find((e) => sameTeam(e.home_team, hn) && sameTeam(e.away_team, an));
+      if (!ev) continue;
+
+      for (const market of ["1", "X", "2", "O2.5", "U2.5"]) {
+        const o = priceFrom(ev.bookmakers, market, ev.home_team, ev.away_team);
+        const price = o && best(o);
+        if (!price) continue;
+        const edge = probs[market] * price - 1;
+        if (edge < MIN_EDGE) continue;
+        if (probs[market] < MIN_PROB) continue;
+        candidates.push({
+          m, comp, market, odds: o, price, edge,
+          prob: probs[market], lh: lam.lh, la: lam.la, hn, an,
+        });
+      }
+    }
+  }
+
+  candidates.sort((a, b) => b.edge - a.edge);
+  const max = Number(process.env.MAX_PICKS || 5);
+  const seen = new Set();
+  let kept = 0;
+
+  for (const c of candidates) {
+    if (kept >= max) break;
+    if (seen.has(String(c.m.id))) continue; // un seul pari par rencontre
+    seen.add(String(c.m.id));
+
+    const LABELS = {
+      "1": `${c.hn} gagne`, X: "Match nul", "2": `${c.an} gagne`,
+      "O2.5": "Plus de 2,5 buts", "U2.5": "Moins de 2,5 buts",
+    };
+    db.picks.push({
+      id: "p" + Date.now().toString(36) + kept,
+      publishedAt: new Date().toISOString(),
+      comp: c.comp,
+      match: `${c.hn} – ${c.an}`,
+      market: c.market,
+      legs: null,
+      label: LABELS[c.market],
+      kickoff: c.m.utcDate,
+      matchId: String(c.m.id),
+      teams: {
+        home: { name: c.hn, crest: c.m.homeTeam.crest || null },
+        away: { name: c.an, crest: c.m.awayTeam.crest || null },
+      },
+      stakePct: 0.01,
+      modelProb: Number(c.prob.toFixed(4)),
+      modelEdge: Number(c.edge.toFixed(4)),
+      why:
+        `Le modèle attend ${c.lh.toFixed(2)} but(s) pour ${c.hn} et ` +
+        `${c.la.toFixed(2)} pour ${c.an}, soit ${(c.prob * 100).toFixed(1)} % de ` +
+        `chances sur ce marché. La cote de ${c.price.toFixed(2)} en implique ` +
+        `${((1 / c.price) * 100).toFixed(1)} %.`,
+      caveat:
+        "Écart calculé sur un modèle de Poisson volontairement simple, estimé " +
+        "sur peu de matchs. Un écart apparent est souvent une erreur de modèle " +
+        "plutôt qu'une erreur du marché.",
+      odds: c.odds,
+      oddsTaken: c.price,
+      oddsClose: null,
+      status: "pending",
+      score: null,
+      auto: "poisson",
+    });
+    kept++;
+    console.log(
+      `Retenu : ${c.hn} – ${c.an} · ${c.market} @ ${c.price.toFixed(2)} · ` +
+      `modèle ${(c.prob * 100).toFixed(1)} % · écart ${(c.edge * 100).toFixed(1)} %`
+    );
+  }
+
+  if (!kept) {
+    return console.log(
+      `Aucun pari réunissant un écart d'au moins ${(MIN_EDGE * 100).toFixed(0)} % ` +
+      `et une probabilité d'au moins ${(MIN_PROB * 100).toFixed(0)} %. Rien n'est publié — ` +
+      `c'est un résultat, pas une panne.`
+    );
+  }
+  await save(db);
+  console.log(`${kept} pari(s) publié(s).`);
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
