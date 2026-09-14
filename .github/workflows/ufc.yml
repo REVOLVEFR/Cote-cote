@@ -1,0 +1,39 @@
+name: UFC - publier les favoris
+
+# REGLE FIGEE le 14 septembre 2026, avant toute observation.
+# Tout combattant cote entre 1.01 et 1.20 est joue, sans exception.
+# Aucun modele, aucune selection. NE PAS MODIFIER ces valeurs.
+
+on:
+  schedule:
+    - cron: "0 10 * * 3"   # mercredi, avant les cartes du week-end
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  ufc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs ufc
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          UFC_MIN_ODDS: "1.01"
+          UFC_MAX_ODDS: "1.20"
+          MIN_BOOKS: "2"
+      - name: Commiter les paris
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git diff --staged --quiet || git commit -m "UFC : favoris publies"
+          git push
