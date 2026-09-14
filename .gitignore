@@ -1,0 +1,5 @@
+node_modules/
+data/
+backtest/data/
+.DS_Store
+.env
