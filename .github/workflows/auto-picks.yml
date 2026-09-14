@@ -14,9 +14,13 @@ on:
         required: false
         default: "5"
       min_edge:
-        description: "Ecart minimal modele/marche pour parier (0.08 = 8%)"
+        description: "Ecart minimal modele/marche (0.08 = 8%). C'est ce qui fait la rentabilite."
         required: false
         default: "0.08"
+      min_prob:
+        description: "Probabilite minimale (0.5 = 50%). Reduit la variance, pas le risque de perte."
+        required: false
+        default: "0.5"
 
 permissions:
   contents: write
@@ -40,6 +44,7 @@ jobs:
           HORIZON_DAYS: ${{ inputs.horizon_days || '8' }}
           MAX_PICKS: ${{ inputs.max_picks || '5' }}
           MIN_EDGE: ${{ inputs.min_edge || '0.08' }}
+          MIN_PROB: ${{ inputs.min_prob || '0.5' }}
       - name: Commiter les paris
         run: |
           git config user.name "cote-a-cote"
