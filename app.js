@@ -12,7 +12,7 @@ const COMPETITIONS = {
   PL: "Premier League", PD: "Liga", BL1: "Bundesliga", SA: "Serie A",
   FL1: "Ligue 1", DED: "Eredivisie", PPL: "Liga Portugal", ELC: "Championship",
   BSA: "Brasileirão", CL: "Ligue des Champions", EC: "Championnat d'Europe",
-  WC: "Coupe du Monde",
+  WC: "Coupe du Monde", UFC: "UFC",
 };
 
 let DB = null;
