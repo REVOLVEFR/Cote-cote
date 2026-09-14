@@ -156,3 +156,11 @@ td .crest-none{width:20px;height:20px}
   border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
 .controls select:focus{outline:2px solid var(--deep);outline-offset:-1px}
 .prob{margin-top:12px;font-size:15px;color:var(--deep);max-width:62ch}
+.vetos{list-style:none;margin:12px 0 0;padding:0}
+.vetos li{border-left:2px solid var(--line);padding:8px 0 8px 14px;
+  margin-bottom:8px;font-size:15px}
+.vetos li span{font-size:14px;color:var(--mute)}
+.fictif{border:1px solid var(--brick);border-radius:5px;padding:15px 17px;
+  margin-bottom:28px;font-size:14px;line-height:1.55;color:var(--ink);
+  background:rgba(160,59,46,.05);max-width:70ch}
+.fictif strong{color:var(--brick)}
