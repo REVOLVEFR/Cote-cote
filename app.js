@@ -85,22 +85,37 @@ function measures(picks) {
 
   // Un seul parcours : capital réel (mises modulées), capital à mise fixe,
   // repli maximal et plus longue série de défaites.
-  let real = CAPITAL, flat = CAPITAL, cum = 0, peak = 0, drawdown = 0;
-  let streak = 0, worstStreak = 0, staked = 0;
+  let real = CAPITAL, flat = CAPITAL, cum = 0, peak = CAPITAL, drawdown = 0;
+  let trough = CAPITAL, rise = 0, low = CAPITAL;
+  let lossStreak = 0, worstStreak = 0, winStreak = 0, bestStreak = 0;
+  let staked = 0, gross = 0, losses = 0, biggestWin = 0, biggestLoss = 0;
   const bankReal = [{ i: 0, v: CAPITAL }], bankFlat = [{ i: 0, v: CAPITAL }];
 
   done.forEach((p, i) => {
     const g = gainOf(p);
+    const euros = g * stakeOf(p);
     cum += g;
     staked += stakeOf(p);
-    real += g * stakeOf(p);
+    if (euros > 0) { gross += euros; biggestWin = Math.max(biggestWin, euros); }
+    else { losses += -euros; biggestLoss = Math.max(biggestLoss, -euros); }
+    real += euros;
     flat += g * CAPITAL * BASE_STAKE;
     bankReal.push({ i: i + 1, v: real });
     bankFlat.push({ i: i + 1, v: flat });
+
+    // Plus haute et plus basse position, pire chute depuis un sommet,
+    // plus forte remontée depuis un creux.
     peak = Math.max(peak, real);
+    low = Math.min(low, real);
     drawdown = Math.max(drawdown, peak - real);
-    streak = p.status === "lost" ? streak + 1 : 0;
-    worstStreak = Math.max(worstStreak, streak);
+    trough = Math.min(trough, real);
+    if (real > trough) rise = Math.max(rise, real - trough);
+    if (real <= low) trough = real;
+
+    if (p.status === "lost") { lossStreak++; winStreak = 0; }
+    else { winStreak++; lossStreak = 0; }
+    worstStreak = Math.max(worstStreak, lossStreak);
+    bestStreak = Math.max(bestStreak, winStreak);
   });
 
   // ROI réel (pondéré par les mises) contre ROI à mise fixe : si le premier
@@ -116,7 +131,10 @@ function measures(picks) {
 
   return {
     n, units, roi, roiReal, ci, bankReal, bankFlat, meanOdds, drawdown, worstStreak,
-    real, flat, gains,
+    real, flat, gains, gross, losses, staked, peak, low, rise, bestStreak,
+    biggestWin, biggestLoss,
+    wins: done.filter((p) => p.status === "won").length,
+    defeats: done.filter((p) => p.status === "lost").length,
     winrate: n ? (done.filter((p) => p.status === "won").length / n) * 100 : null,
     required, clv, clvN: clvs.length,
     beat: clvs.length ? (clvs.filter((x) => x > 0).length / clvs.length) * 100 : null,
@@ -206,9 +224,12 @@ function card(p) {
 
 async function viewUpcoming() {
   const { picks } = await db();
-  const s = measures(picks);
+  const s = measures(picks.filter((p) => !p.vetoed));
   const open = picks
-    .filter((p) => p.status === "pending")
+    .filter((p) => p.status === "pending" && !p.vetoed)
+    .sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)));
+  const aside = picks
+    .filter((p) => p.status === "pending" && p.vetoed)
     .sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)));
 
   const strip = s.n
@@ -228,7 +249,15 @@ async function viewUpcoming() {
     (open.length
       ? open.map(card).join("")
       : `<div class="empty">Aucun pari ouvert pour le moment. Les prochains
-           paraissent dès que les cotes ouvrent, souvent une semaine avant.</div>`);
+           paraissent dès que les cotes ouvrent, souvent une semaine avant.</div>`) +
+    (aside.length
+      ? `<div class="sec"><h3>Écartés cette semaine</h3>
+          <p class="note">Retenus par le modèle, mis de côté sur une information
+            qu'il n'avait pas. Suivis quand même, pour pouvoir juger le jugement.</p>
+          <ul class="vetos">${aside.map((p) => `<li><strong>${esc(p.match)}</strong>
+            — ${esc(p.label)}<br><span>${esc(p.vetoed.label)} : ${esc(p.vetoed.detail)}</span></li>`).join("")}</ul>
+        </div>`
+      : "");
 }
 
 /* --------------------------------------------------------------- historique */
@@ -323,8 +352,11 @@ function bankChart(real, flat) {
 
 async function viewRecord() {
   const { picks } = await db();
-  const s = measures(picks);
-  const v =
+  const live = picks.filter((p) => !p.vetoed);
+  const vetoed = picks.filter((p) => p.vetoed);
+  const s = measures(live);
+  const v = vetoed.length ? measures(vetoed) : null;
+  const verdictText =
     s.n === 0
       ? ["Aucun pari réglé",
          "Les mesures apparaîtront dès que des rencontres auront été jouées."]
@@ -360,7 +392,13 @@ async function viewRecord() {
 
   app.innerHTML = `<div class="lede"><h1>Bilan</h1>
       <p>Ce que les chiffres autorisent à conclure — et ce qu'ils n'autorisent pas.</p></div>
-    <div class="verdict"><h2>${esc(v[0])}</h2><p>${esc(v[1])}</p></div>
+    <div class="fictif"><strong>Capital fictif.</strong> Aucun argent réel n'est engagé.
+      Un backtest sur 24 389 matchs et neuf saisons a conclu que ce modèle ne bat pas
+      la cote de clôture. Une seule règle n'y a pas été réfutée — probabilité au moins
+      égale à 70 %, cote au moins égale à 1,25 — et c'est elle qui est vérifiée ici,
+      sur des rencontres qu'elle n'a jamais vues. La règle a été figée avant la première
+      publication et ne sera pas modifiée.</div>
+    <div class="verdict"><h2>${esc(verdictText[0])}</h2><p>${esc(verdictText[1])}</p></div>
 
     <div class="sec"><h3>Un capital de ${eur(CAPITAL, 0)}, pari après pari</h3>
       ${bankChart(s.bankReal, s.bankFlat)}${compare}
@@ -394,7 +432,19 @@ async function viewRecord() {
         <div class="v num">${s.pending}</div>
         <div class="s">rencontres non jouées</div></div>
     </div>
-    ${kinds}`;
+    ${kinds}
+    ${v && v.n ? `<div class="sec"><h3>Les paris écartés</h3>
+      <table><thead><tr><th>Lot</th><th class="r">Paris</th>
+        <th class="r">Rendement</th></tr></thead><tbody>
+        <tr><td>Publiés</td><td class="r num">${s.n}</td>
+          <td class="r num">${pc(s.roi)}</td></tr>
+        <tr><td>Écartés par jugement</td><td class="r num">${v.n}</td>
+          <td class="r num">${pc(v.roi)}</td></tr>
+      </tbody></table>
+      <p class="note">Chaque veto repose sur une information absente du modèle,
+        et le pari écarté reste suivi. Si le rendement des écartés dépasse celui
+        des publiés, le jugement détruit de la valeur au lieu d'en créer, et il
+        faut cesser d'écarter.</p></div>` : ""}`;
 }
 
 /* --------------------------------------------------------------- projection
