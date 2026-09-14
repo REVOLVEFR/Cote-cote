@@ -1,0 +1,32 @@
+name: Lister les matchs
+
+on:
+  workflow_dispatch:
+    inputs:
+      comp:
+        description: Championnat
+        required: true
+        type: choice
+        options: [PL, PD, BL1, SA, FL1, DED, PPL, ELC, BSA, CL, EC, WC]
+      matchday:
+        description: "Journee (laisser vide pour les prochains jours)"
+        required: false
+      days:
+        description: "Fenetre en jours si aucune journee n'est precisee"
+        required: false
+        default: "10"
+
+jobs:
+  fixtures:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs fixtures
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          COMP: ${{ inputs.comp }}
+          MATCHDAY: ${{ inputs.matchday }}
+          DAYS: ${{ inputs.days }}
