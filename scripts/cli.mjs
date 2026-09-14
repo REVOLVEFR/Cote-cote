@@ -11,6 +11,8 @@
 //   node scripts/cli.mjs autoodds  relève les cotes chez The Odds API
 //   node scripts/cli.mjs model     sélectionne par modèle de Poisson (sans LLM)
 //   node scripts/cli.mjs veto      écarte un pari, avec raison obligatoire
+//   node scripts/cli.mjs ufc       publie les favoris UFC (règle figée)
+//   node scripts/cli.mjs ufcsettle règle les combats terminés
 
 import { readFile, writeFile } from "node:fs/promises";
 
@@ -31,6 +33,7 @@ export const COMPETITIONS = {
   CL: "Ligue des Champions",
   EC: "Championnat d'Europe",
   WC: "Coupe du Monde",
+  UFC: "UFC",
 };
 
 const BOOKS = ["winamax", "betclic", "unibet"];
@@ -102,7 +105,7 @@ async function cmdSettle() {
   if (!token) die("FOOTBALL_DATA_TOKEN absent des secrets du dépôt.");
 
   const db = await load();
-  const waiting = db.picks.filter((p) => p.status === "pending");
+  const waiting = db.picks.filter((p) => p.status === "pending" && p.sport !== "mma");
   if (!waiting.length) return console.log("Aucun pari en attente à régler.");
 
   const codes = [
@@ -601,7 +604,9 @@ async function cmdAutoOdds() {
   if (!key) die("ODDS_API_KEY absente des secrets du dépôt.");
 
   const db = await load();
-  const pending = db.picks.filter((p) => p.status === "pending" && !p.legs && p.matchId);
+  const pending = db.picks.filter(
+    (p) => p.status === "pending" && !p.legs && p.matchId && p.sport !== "mma"
+  );
   if (!pending.length) return console.log("Aucun pari en attente.");
 
   // On ne relève que ce qui sert : cote d'ouverture manquante, ou clôture
@@ -1021,9 +1026,161 @@ async function cmdVeto() {
   console.log(`${p.match} écarté — ${VETO_REASONS[reason]}. Le pari reste suivi en parallèle.`);
 }
 
+
+/* ======================================================================
+   UFC — RÈGLE FIGÉE le 14 septembre 2026, avant toute observation.
+   NE PAS MODIFIER.
+
+   Aucun modèle. Aucune sélection. On mise une unité sur tout combattant
+   dont la cote se situe entre 1,01 et 1,20, sans exception.
+
+   Fondement : sur 6 916 combats depuis 2010, cette tranche affiche
+   +2,23 % de rendement, et +4,56 % sur la période de validation
+   2021-2026 (220 paris, t = 2,15). C'est sous le seuil corrigé de 2,58
+   exigé pour cinq hypothèses testées : le signal n'est pas établi, il
+   est seulement non réfuté. Le suivi sert à voir s'il persiste.
+
+   La marge moyenne du bookmaker en MMA est de 3,53 %, contre environ 5 %
+   sur le 1X2 football : le seuil à franchir y est plus bas.
+   ====================================================================== */
+
+const UFC_MIN = Number(process.env.UFC_MIN_ODDS || 1.01);
+const UFC_MAX = Number(process.env.UFC_MAX_ODDS || 1.20);
+const MMA_SPORT = "mma_mixed_martial_arts";
+
+async function cmdUfc() {
+  const key = process.env.ODDS_API_KEY;
+  if (!key) die("ODDS_API_KEY absente.");
+
+  const res = await fetch(
+    `${OA}/sports/${MMA_SPORT}/odds?apiKey=${key}&regions=eu&markets=h2h&oddsFormat=decimal`
+  );
+  if (!res.ok) die(`The Odds API a répondu ${res.status}`);
+  console.log(`Crédits restants : ${res.headers.get("x-requests-remaining")}`);
+
+  const events = await res.json();
+  if (!Array.isArray(events) || !events.length) {
+    return console.log("Aucun combat coté pour le moment.");
+  }
+  console.log(`${events.length} combat(s) cotés.`);
+
+  const db = await load();
+  const seen = new Set(db.picks.filter((p) => p.sport === "mma").map((p) => p.eventId + "|" + p.market));
+  let kept = 0;
+
+  for (const ev of events) {
+    if (new Date(ev.commence_time) <= Date.now()) continue;
+
+    // Prix par combattant, tous bookmakers confondus.
+    const prices = {};
+    for (const b of ev.bookmakers || []) {
+      const mk = (b.markets || []).find((m) => m.key === "h2h");
+      for (const o of mk?.outcomes || []) {
+        (prices[o.name] ||= []).push(o.price);
+      }
+    }
+
+    for (const [fighter, list] of Object.entries(prices)) {
+      if (list.length < MIN_BOOKS) continue;
+      const ref = median(list);       // consensus, sert à décider
+      const price = Math.max(...list); // meilleur prix, sert à parier
+      if (ref < UFC_MIN || ref > UFC_MAX) continue;
+
+      const side = fighter === ev.home_team ? "1" : "2";
+      if (seen.has(ev.id + "|" + side)) continue;
+
+      const opponent = fighter === ev.home_team ? ev.away_team : ev.home_team;
+      db.picks.push({
+        id: "u" + Date.now().toString(36) + kept,
+        publishedAt: new Date().toISOString(),
+        sport: "mma",
+        comp: "UFC",
+        match: `${ev.home_team} – ${ev.away_team}`,
+        market: side,
+        legs: null,
+        label: `${fighter} gagne`,
+        kickoff: ev.commence_time,
+        matchId: null,
+        eventId: ev.id,
+        fighter,
+        teams: { home: { name: ev.home_team, crest: null }, away: { name: ev.away_team, crest: null } },
+        stakePct: 0.01,
+        modelProb: Number((1 / ref).toFixed(4)),
+        why:
+          `Règle figée : tout combattant coté entre ${UFC_MIN} et ${UFC_MAX} est ` +
+          `joué, sans exception ni sélection. Consensus à ${ref.toFixed(2)}, ` +
+          `pari pris à ${price.toFixed(2)} contre ${opponent}.`,
+        caveat:
+          "Aucun modèle derrière ce pari : il repose uniquement sur un biais " +
+          "favori-outsider observé dans le passé, non établi statistiquement. " +
+          "Un très gros favori perd tout de même environ une fois sur dix.",
+        odds: { winamax: null, betclic: null, unibet: null },
+        oddsTaken: price,
+        oddsClose: null,
+        status: "pending",
+        score: null,
+        auto: "ufc-regle-figee",
+      });
+      seen.add(ev.id + "|" + side);
+      kept++;
+      console.log(`Retenu : ${fighter} @ ${price.toFixed(2)} (consensus ${ref.toFixed(2)})`);
+    }
+  }
+
+  if (!kept) return console.log(`Aucun combattant coté entre ${UFC_MIN} et ${UFC_MAX}.`);
+  await save(db);
+  console.log(`${kept} pari(s) publié(s).`);
+}
+
+// Règlement via l'endpoint scores de The Odds API. La forme exacte de la
+// réponse pour le MMA n'a pas pu être vérifiée faute de clé : le premier
+// appel journalise la charge brute, et tout combat non décidable reste
+// marqué pour règlement manuel plutôt que réglé au hasard.
+async function cmdUfcSettle() {
+  const key = process.env.ODDS_API_KEY;
+  if (!key) die("ODDS_API_KEY absente.");
+
+  const db = await load();
+  const pending = db.picks.filter((p) => p.sport === "mma" && p.status === "pending");
+  if (!pending.length) return console.log("Aucun combat en attente.");
+
+  const res = await fetch(`${OA}/sports/${MMA_SPORT}/scores?apiKey=${key}&daysFrom=3`);
+  if (!res.ok) die(`The Odds API scores → ${res.status}`);
+  const events = await res.json();
+  if (process.env.DEBUG_SCORES) console.log(JSON.stringify(events.slice(0, 2), null, 2));
+
+  const byId = new Map(events.map((e) => [e.id, e]));
+  let done = 0, manual = 0;
+
+  for (const p of pending) {
+    const ev = byId.get(p.eventId);
+    if (!ev || !ev.completed) continue;
+
+    // On cherche le vainqueur parmi les scores. En MMA, le vainqueur porte
+    // habituellement 1 et le perdant 0.
+    const sc = ev.scores || [];
+    const nums = sc.map((x) => Number(x.score));
+    if (sc.length !== 2 || nums.some((n) => !Number.isFinite(n)) || nums[0] === nums[1]) {
+      p.needsManual = true;
+      manual++;
+      console.log(`${p.match} : issue non décidable, règlement manuel requis.`);
+      continue;
+    }
+    const winner = nums[0] > nums[1] ? sc[0].name : sc[1].name;
+    p.score = `${sc[0].name} ${nums[0]}–${nums[1]} ${sc[1].name}`;
+    p.status = winner === p.fighter ? "won" : "lost";
+    p.settledAt = new Date().toISOString();
+    done++;
+    console.log(`${p.fighter} → ${p.status}`);
+  }
+
+  if (done || manual) await save(db);
+  console.log(`${done} réglé(s), ${manual} en attente de règlement manuel.`);
+}
+
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, veto: cmdVeto };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, veto: cmdVeto, ufc: cmdUfc, ufcsettle: cmdUfcSettle };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
