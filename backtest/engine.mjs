@@ -222,13 +222,31 @@ export function backtest(matches, params = {}) {
   const { minGames = 8, minProb = 0, ...modelOpts } = params;
   const byDiv = new Map();
   const records = [];
+  // Forme récente par équipe, tenue à jour au fil de l'eau. Sert à tester
+  // des règles de ciblage fondées sur autre chose que l'écart de prix.
+  const form = new Map();
+  const getForm = (n) => {
+    if (!form.has(n)) form.set(n, []);
+    return form.get(n);
+  };
+  const last = (arr, k, f) => arr.slice(-k).reduce((a, x) => a + f(x), 0);
 
   for (const m of matches) {
     if (!byDiv.has(m.div)) byDiv.set(m.div, new Model(modelOpts));
     const model = byDiv.get(m.div);
     const p = model.predict(m.home, m.away, m.date, minGames);
 
-    if (p) {
+    const fh = getForm(m.home), fa = getForm(m.away);
+
+    if (p && fh.length >= 3 && fa.length >= 3) {
+      const feat = {
+        hScored3: last(fh, 3, (x) => x.gf),
+        aScored3: last(fa, 3, (x) => x.gf),
+        hConceded3: last(fh, 3, (x) => x.ga),
+        aConceded3: last(fa, 3, (x) => x.ga),
+        hPoints5: last(fh, 5, (x) => x.pts),
+        aPoints5: last(fa, 5, (x) => x.pts),
+      };
       const oneX2 = m.closeH && m.closeD && m.closeA
         ? devig([m.closeH, m.closeD, m.closeA]) : null;
       const ou = m.closeO && m.closeU ? devig([m.closeO, m.closeU]) : null;
@@ -244,7 +262,9 @@ export function backtest(matches, params = {}) {
         if (p[mk.key] < minProb) continue;
 
         records.push({
+          ...feat,
           date: m.date, div: m.div, market: mk.key,
+          home: m.home, away: m.away,
           model: p[mk.key],
           fair,
           edge: p[mk.key] / fair - 1,        // écart au prix équitable
@@ -256,8 +276,38 @@ export function backtest(matches, params = {}) {
       }
     }
     model.observe(m);
+    const pt = (a, b) => (a > b ? 3 : a === b ? 1 : 0);
+    fh.push({ gf: m.hg, ga: m.ag, pts: pt(m.hg, m.ag) });
+    fa.push({ gf: m.ag, ga: m.hg, pts: pt(m.ag, m.hg) });
+    if (fh.length > 12) fh.shift();
+    if (fa.length > 12) fa.shift();
   }
   return records;
+}
+
+// Semaine ISO, pour regrouper les occasions comme le ferait une publication
+// hebdomadaire.
+export const weekOf = (d) => {
+  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+  const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return `${t.getUTCFullYear()}-S${String(Math.ceil(((t - y0) / 864e5 + 1) / 7)).padStart(2, "0")}`;
+};
+
+// Ne garde que les N meilleures occasions de chaque semaine, comme le fait
+// un bot qui publie quelques paris par week-end.
+export function weeklyTop(records, n, score = (r) => r.edge) {
+  const weeks = new Map();
+  for (const r of records) {
+    const w = weekOf(r.date);
+    if (!weeks.has(w)) weeks.set(w, []);
+    weeks.get(w).push(r);
+  }
+  const out = [];
+  for (const list of weeks.values()) {
+    out.push(...list.sort((a, b) => score(b) - score(a)).slice(0, n));
+  }
+  return out;
 }
 
 export const seasonOf = (d) => {
