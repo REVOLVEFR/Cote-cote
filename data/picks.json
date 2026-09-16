@@ -1,1 +1,157 @@
-{ "picks": [], "updatedAt": null }
+{
+  "picks": [
+    {
+      "id": "umu477fp30",
+      "publishedAt": "2026-09-16T14:30:49.143Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Ozzy Diaz – Ryan Gandra",
+      "market": "2",
+      "legs": null,
+      "label": "Ryan Gandra gagne",
+      "kickoff": "2026-09-19T21:00:00Z",
+      "matchId": null,
+      "eventId": "2c47e541ab2e5fa5cef2e7d8b563d484",
+      "fighter": "Ryan Gandra",
+      "teams": {
+        "home": {
+          "name": "Ozzy Diaz",
+          "crest": null
+        },
+        "away": {
+          "name": "Ryan Gandra",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8333,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.20, pari pris à 1.22 contre Ozzy Diaz.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.22,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umu477fp41",
+      "publishedAt": "2026-09-16T14:30:49.144Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Tai Tuivasa – Robelis Despaigne",
+      "market": "2",
+      "legs": null,
+      "label": "Robelis Despaigne gagne",
+      "kickoff": "2026-09-19T23:45:00Z",
+      "matchId": null,
+      "eventId": "35495c892bf6e3997d2725df4ca003df",
+      "fighter": "Robelis Despaigne",
+      "teams": {
+        "home": {
+          "name": "Tai Tuivasa",
+          "crest": null
+        },
+        "away": {
+          "name": "Robelis Despaigne",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8772,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.14, pari pris à 1.16 contre Tai Tuivasa.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.16,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umu477fp42",
+      "publishedAt": "2026-09-16T14:30:49.144Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Gable Steveson – Sean Sharaf",
+      "market": "1",
+      "legs": null,
+      "label": "Gable Steveson gagne",
+      "kickoff": "2026-09-20T01:15:00Z",
+      "matchId": null,
+      "eventId": "430372943e1a714088d294f9501e2c06",
+      "fighter": "Gable Steveson",
+      "teams": {
+        "home": {
+          "name": "Gable Steveson",
+          "crest": null
+        },
+        "away": {
+          "name": "Sean Sharaf",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.9524,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.05, pari pris à 1.06 contre Sean Sharaf.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.06,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umu477fp43",
+      "publishedAt": "2026-09-16T14:30:49.144Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Deiveson Figueiredo – Payton Talbott",
+      "market": "2",
+      "legs": null,
+      "label": "Payton Talbott gagne",
+      "kickoff": "2026-10-04T01:00:00Z",
+      "matchId": null,
+      "eventId": "96e3358cd42ab238e7b471c8fedc75f2",
+      "fighter": "Payton Talbott",
+      "teams": {
+        "home": {
+          "name": "Deiveson Figueiredo",
+          "crest": null
+        },
+        "away": {
+          "name": "Payton Talbott",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8772,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.14, pari pris à 1.20 contre Deiveson Figueiredo.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.2,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    }
+  ],
+  "updatedAt": "2026-09-16T14:30:49.144Z"
+}
