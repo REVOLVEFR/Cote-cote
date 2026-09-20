@@ -72,9 +72,10 @@
       },
       "oddsTaken": 1.16,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Tai Tuivasa 0–1 Robelis Despaigne",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-09-20T12:48:18.034Z"
     },
     {
       "id": "umu477fp42",
@@ -110,9 +111,10 @@
       },
       "oddsTaken": 1.06,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "lost",
+      "score": "Gable Steveson 0–1 Sean Sharaf",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-09-20T12:48:18.034Z"
     },
     {
       "id": "umu477fp43",
@@ -153,5 +155,5 @@
       "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-09-16T14:30:49.144Z"
+  "updatedAt": "2026-09-20T12:48:18.035Z"
 }
