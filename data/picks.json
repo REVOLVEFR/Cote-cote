@@ -153,7 +153,45 @@
       "status": "pending",
       "score": null,
       "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umue7gn0q0",
+      "publishedAt": "2026-09-23T14:35:40.298Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Yazmin Jauregui – Vanessa Demopoulos",
+      "market": "1",
+      "legs": null,
+      "label": "Yazmin Jauregui gagne",
+      "kickoff": "2026-09-26T19:00:00Z",
+      "matchId": null,
+      "eventId": "bc8e38ecf51476858112f513ef4bdf60",
+      "fighter": "Yazmin Jauregui",
+      "teams": {
+        "home": {
+          "name": "Yazmin Jauregui",
+          "crest": null
+        },
+        "away": {
+          "name": "Vanessa Demopoulos",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.9091,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.10, pari pris à 1.11 contre Vanessa Demopoulos.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.11,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-09-20T12:48:18.035Z"
+  "updatedAt": "2026-09-23T14:35:40.298Z"
 }
