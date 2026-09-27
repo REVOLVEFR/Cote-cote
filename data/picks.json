@@ -188,10 +188,11 @@
       },
       "oddsTaken": 1.11,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Vanessa Demopoulos 0–1 Yazmin Jauregui",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-09-27T13:28:20.830Z"
     }
   ],
-  "updatedAt": "2026-09-23T14:35:40.298Z"
+  "updatedAt": "2026-09-27T13:28:20.830Z"
 }
