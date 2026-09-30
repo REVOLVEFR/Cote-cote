@@ -192,7 +192,121 @@
       "score": "Vanessa Demopoulos 0–1 Yazmin Jauregui",
       "auto": "ufc-regle-figee",
       "settledAt": "2026-09-27T13:28:20.830Z"
+    },
+    {
+      "id": "umuob0ble0",
+      "publishedAt": "2026-09-30T16:12:39.218Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Lucas Armand – Anthony Wint",
+      "market": "2",
+      "legs": null,
+      "label": "Anthony Wint gagne",
+      "kickoff": "2026-10-03T21:00:00Z",
+      "matchId": null,
+      "eventId": "76a1ed2645781ce922f06024d5849aed",
+      "fighter": "Anthony Wint",
+      "teams": {
+        "home": {
+          "name": "Lucas Armand",
+          "crest": null
+        },
+        "away": {
+          "name": "Anthony Wint",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8439,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.19, pari pris à 1.20 contre Lucas Armand.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.2,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umuob0ble1",
+      "publishedAt": "2026-09-30T16:12:39.218Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Damian Pinas – Andrey Pulyaev",
+      "market": "1",
+      "legs": null,
+      "label": "Damian Pinas gagne",
+      "kickoff": "2026-10-04T00:00:00Z",
+      "matchId": null,
+      "eventId": "695fcee69269ceddce48f88971461ded",
+      "fighter": "Damian Pinas",
+      "teams": {
+        "home": {
+          "name": "Damian Pinas",
+          "crest": null
+        },
+        "away": {
+          "name": "Andrey Pulyaev",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8475,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.18, pari pris à 1.22 contre Andrey Pulyaev.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.22,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umuob0blf2",
+      "publishedAt": "2026-09-30T16:12:39.219Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Jacobe Smith – Bruce Whitehead",
+      "market": "1",
+      "legs": null,
+      "label": "Jacobe Smith gagne",
+      "kickoff": "2026-10-04T00:00:00Z",
+      "matchId": null,
+      "eventId": "6ef3d90fcb1c708a2d25c4284867142f",
+      "fighter": "Jacobe Smith",
+      "teams": {
+        "home": {
+          "name": "Jacobe Smith",
+          "crest": null
+        },
+        "away": {
+          "name": "Bruce Whitehead",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.9091,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.10, pari pris à 1.11 contre Bruce Whitehead.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.11,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-09-27T13:28:20.830Z"
+  "updatedAt": "2026-09-30T16:12:39.219Z"
 }
