@@ -306,7 +306,45 @@
       "status": "pending",
       "score": null,
       "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umv8873pl0",
+      "publishedAt": "2026-10-14T14:49:20.265Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Julien Leblanc – Nick Galanti",
+      "market": "2",
+      "legs": null,
+      "label": "Nick Galanti gagne",
+      "kickoff": "2026-10-18T02:00:00Z",
+      "matchId": null,
+      "eventId": "c768abb043dc6a0932217f2956f0ff36",
+      "fighter": "Nick Galanti",
+      "teams": {
+        "home": {
+          "name": "Julien Leblanc",
+          "crest": null
+        },
+        "away": {
+          "name": "Nick Galanti",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8696,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.15, pari pris à 1.18 contre Julien Leblanc.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.18,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-09-30T16:12:39.219Z"
+  "updatedAt": "2026-10-14T14:49:20.266Z"
 }
