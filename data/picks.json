@@ -341,10 +341,11 @@
       },
       "oddsTaken": 1.18,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Julien Leblanc 0–1 Nick Galanti",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-10-18T12:23:21.531Z"
     }
   ],
-  "updatedAt": "2026-10-14T14:49:20.266Z"
+  "updatedAt": "2026-10-18T12:23:21.532Z"
 }
