@@ -345,7 +345,83 @@
       "score": "Julien Leblanc 0–1 Nick Galanti",
       "auto": "ufc-regle-figee",
       "settledAt": "2026-10-18T12:23:21.531Z"
+    },
+    {
+      "id": "umvi8850h0",
+      "publishedAt": "2026-10-21T14:47:50.369Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Nikita Krylov – Abdulrakhman Yakhyaev",
+      "market": "2",
+      "legs": null,
+      "label": "Abdulrakhman Yakhyaev gagne",
+      "kickoff": "2026-10-24T14:00:00Z",
+      "matchId": null,
+      "eventId": "78d6472a61824019c0d8f1a535e3d475",
+      "fighter": "Abdulrakhman Yakhyaev",
+      "teams": {
+        "home": {
+          "name": "Nikita Krylov",
+          "crest": null
+        },
+        "away": {
+          "name": "Abdulrakhman Yakhyaev",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8368,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.19, pari pris à 1.22 contre Nikita Krylov.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.22,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umvi8850i1",
+      "publishedAt": "2026-10-21T14:47:50.370Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Asaf Chopurov – Colby Thicknesse",
+      "market": "1",
+      "legs": null,
+      "label": "Asaf Chopurov gagne",
+      "kickoff": "2026-10-24T14:00:00Z",
+      "matchId": null,
+      "eventId": "19e00c3e71ae8d463fe09e7652511d00",
+      "fighter": "Asaf Chopurov",
+      "teams": {
+        "home": {
+          "name": "Asaf Chopurov",
+          "crest": null
+        },
+        "away": {
+          "name": "Colby Thicknesse",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8547,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.17, pari pris à 1.19 contre Colby Thicknesse.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.19,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-10-18T12:23:21.532Z"
+  "updatedAt": "2026-10-21T14:47:50.371Z"
 }
