@@ -380,9 +380,10 @@
       },
       "oddsTaken": 1.22,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Nikita Krylov 0–1 Abdulrakhman Yakhyaev",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-10-24T22:10:58.851Z"
     },
     {
       "id": "umvi8850i1",
@@ -418,10 +419,11 @@
       },
       "oddsTaken": 1.19,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "lost",
+      "score": "Colby Thicknesse 1–0 Asaf Chopurov",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-10-24T22:10:58.852Z"
     }
   ],
-  "updatedAt": "2026-10-21T14:47:50.371Z"
+  "updatedAt": "2026-10-24T22:10:58.852Z"
 }
