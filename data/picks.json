@@ -423,7 +423,83 @@
       "score": "Colby Thicknesse 1–0 Asaf Chopurov",
       "auto": "ufc-regle-figee",
       "settledAt": "2026-10-24T22:10:58.852Z"
+    },
+    {
+      "id": "umvsbq59k0",
+      "publishedAt": "2026-10-28T16:23:31.112Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Tainara Lisboa – Lucia Szabová",
+      "market": "2",
+      "legs": null,
+      "label": "Lucia Szabová gagne",
+      "kickoff": "2026-10-31T21:10:00Z",
+      "matchId": null,
+      "eventId": "300f1ecfecf6966da9aecbd7945f294b",
+      "fighter": "Lucia Szabová",
+      "teams": {
+        "home": {
+          "name": "Tainara Lisboa",
+          "crest": null
+        },
+        "away": {
+          "name": "Lucia Szabová",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8772,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.14, pari pris à 1.16 contre Tainara Lisboa.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.16,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umvsbq59l1",
+      "publishedAt": "2026-10-28T16:23:31.113Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Bilal Hasan – Luis Gurule",
+      "market": "1",
+      "legs": null,
+      "label": "Bilal Hasan gagne",
+      "kickoff": "2026-11-15T01:00:00Z",
+      "matchId": null,
+      "eventId": "0f6cfcb1868371108dac702977aa052a",
+      "fighter": "Bilal Hasan",
+      "teams": {
+        "home": {
+          "name": "Bilal Hasan",
+          "crest": null
+        },
+        "away": {
+          "name": "Luis Gurule",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.9091,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.10, pari pris à 1.11 contre Luis Gurule.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.11,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-10-24T22:10:58.852Z"
+  "updatedAt": "2026-10-28T16:23:31.114Z"
 }
