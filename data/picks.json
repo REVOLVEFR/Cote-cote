@@ -499,7 +499,121 @@
       "status": "pending",
       "score": null,
       "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umw2ekopo0",
+      "publishedAt": "2026-11-04T17:40:56.988Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Priscila Cachoeira – Nina Milošević",
+      "market": "2",
+      "legs": null,
+      "label": "Nina Milošević gagne",
+      "kickoff": "2026-11-07T22:00:00Z",
+      "matchId": null,
+      "eventId": "1c1bb8b6a8e6e87f83ecfa1ef9dc2c32",
+      "fighter": "Nina Milošević",
+      "teams": {
+        "home": {
+          "name": "Priscila Cachoeira",
+          "crest": null
+        },
+        "away": {
+          "name": "Nina Milošević",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8333,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.20, pari pris à 1.21 contre Priscila Cachoeira.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.21,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umw2ekopo1",
+      "publishedAt": "2026-11-04T17:40:56.988Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Seok Hyun Ko – Wellington Turman",
+      "market": "1",
+      "legs": null,
+      "label": "Seok Hyun Ko gagne",
+      "kickoff": "2026-11-08T01:00:00Z",
+      "matchId": null,
+      "eventId": "fb05169fb496b2dfdf3ff9110ae170de",
+      "fighter": "Seok Hyun Ko",
+      "teams": {
+        "home": {
+          "name": "Seok Hyun Ko",
+          "crest": null
+        },
+        "away": {
+          "name": "Wellington Turman",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8772,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.14, pari pris à 1.17 contre Wellington Turman.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.17,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
+    },
+    {
+      "id": "umw2ekopo2",
+      "publishedAt": "2026-11-04T17:40:56.988Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Luis Gurule – Bilal Hasan",
+      "market": "2",
+      "legs": null,
+      "label": "Bilal Hasan gagne",
+      "kickoff": "2026-11-15T02:00:00Z",
+      "matchId": null,
+      "eventId": "0f6cfcb1868371108dac702977aa052a",
+      "fighter": "Bilal Hasan",
+      "teams": {
+        "home": {
+          "name": "Luis Gurule",
+          "crest": null
+        },
+        "away": {
+          "name": "Bilal Hasan",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.9009,
+      "why": "Règle figée : tout combattant coté entre 1.01 et 1.2 est joué, sans exception ni sélection. Consensus à 1.11, pari pris à 1.11 contre Luis Gurule.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.11,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee"
     }
   ],
-  "updatedAt": "2026-10-28T16:23:31.114Z"
+  "updatedAt": "2026-11-04T17:40:56.989Z"
 }
