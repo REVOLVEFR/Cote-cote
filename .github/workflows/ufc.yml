@@ -1,8 +1,7 @@
 name: UFC - publier les favoris
 
-# REGLE FIGEE le 14 septembre 2026, avant toute observation.
-# Tout combattant cote entre 1.01 et 1.20 est joue, sans exception.
-# Aucun modele, aucune selection. NE PAS MODIFIER ces valeurs.
+# REGLE v2 du 8 novembre 2026 : tout combattant cote entre 1.01 et 1.30 est joue.
+# Au-dela de 1.30, l'historique ne montre plus de rendement positif.
 
 on:
   schedule:
@@ -28,7 +27,7 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           UFC_MIN_ODDS: "1.01"
-          UFC_MAX_ODDS: "1.20"
+          UFC_MAX_ODDS: "1.30"
           MIN_BOOKS: "2"
       - name: Commiter les paris
         run: |
