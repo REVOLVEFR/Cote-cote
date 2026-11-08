@@ -668,10 +668,11 @@
       },
       "oddsTaken": 2.53,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "lost",
+      "score": "2-3",
       "auto": "ecart-pinnacle",
-      "rule": "foot-v2-2026-11-08"
+      "rule": "foot-v2-2026-11-08",
+      "settledAt": "2026-11-08T22:21:57.350Z"
     },
     {
       "id": "vmw85sdn41",
@@ -707,10 +708,11 @@
       },
       "oddsTaken": 1.78,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "1-2",
       "auto": "ecart-pinnacle",
-      "rule": "foot-v2-2026-11-08"
+      "rule": "foot-v2-2026-11-08",
+      "settledAt": "2026-11-08T22:21:57.350Z"
     },
     {
       "id": "vmw85sdn42",
@@ -746,10 +748,11 @@
       },
       "oddsTaken": 2.2,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "lost",
+      "score": "1-2",
       "auto": "ecart-pinnacle",
-      "rule": "foot-v2-2026-11-08"
+      "rule": "foot-v2-2026-11-08",
+      "settledAt": "2026-11-08T22:21:57.351Z"
     },
     {
       "id": "vmw85sdn43",
@@ -824,11 +827,12 @@
       },
       "oddsTaken": 2,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "lost",
+      "score": "2-2",
       "auto": "ecart-pinnacle",
-      "rule": "foot-v2-2026-11-08"
+      "rule": "foot-v2-2026-11-08",
+      "settledAt": "2026-11-08T22:21:57.351Z"
     }
   ],
-  "updatedAt": "2026-11-08T18:21:36.400Z"
+  "updatedAt": "2026-11-08T22:21:57.351Z"
 }
