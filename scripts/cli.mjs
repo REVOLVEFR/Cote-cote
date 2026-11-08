@@ -34,6 +34,7 @@ export const COMPETITIONS = {
   EC: "Championnat d'Europe",
   WC: "Coupe du Monde",
   UFC: "UFC",
+  UNL: "Ligue des Nations",
 };
 
 const BOOKS = ["winamax", "betclic", "unibet"];
@@ -105,7 +106,8 @@ async function cmdSettle() {
   if (!token) die("FOOTBALL_DATA_TOKEN absent des secrets du dépôt.");
 
   const db = await load();
-  const waiting = db.picks.filter((p) => p.status === "pending" && p.sport !== "mma");
+  // La Ligue des Nations se règle via The Odds API (trevesettle).
+  const waiting = db.picks.filter((p) => p.status === "pending" && p.sport !== "mma" && p.comp !== "UNL");
   if (!waiting.length) return console.log("Aucun pari en attente à régler.");
 
   const codes = [
@@ -216,12 +218,21 @@ async function cmdAdd() {
   const kickoff = (e.KICKOFF || "").trim();
   const stakePct = readStake(e.STAKE_PCT);
 
-  const track = (e.TRACK || "").trim() || null;
+  const rawTrack = (e.TRACK || "").trim() || null;
+  const isUnl = comp === "UNL";
+  const isUfc = comp === "UFC";
+  const usesEventId = isUnl || isUfc;
+  const track = rawTrack === "avis" ? (isUnl ? "treve" : isUfc ? "ufc-avis" : "avis") : rawTrack;
+  const confidence = (e.CONFIDENCE || "").trim() || null;
+  const oddsGiven = Number((e.ODDS || "").replace(",", "."));
   if (!match) die("La rencontre est obligatoire.");
-  if (track === "avis") {
+  if (rawTrack === "avis") {
     if ((e.WHY || "").trim().length < 40) die("Un avis exige une raison précise, en 40 caractères au minimum.");
     if (!(e.CAVEAT || "").trim()) die("Un avis doit dire ce qui peut le faire échouer.");
     if (!(e.MATCH_ID || "").trim()) die("Un avis exige l'identifiant du match, sinon il ne sera jamais réglé.");
+    if (!["Modérée", "Forte"].includes(confidence)) die("Un avis doit indiquer une confiance : Modérée ou Forte.");
+    if (isUfc && !(oddsGiven > 1)) die("Un avis UFC exige la cote prise.");
+    if (isUfc && !["1", "2"].includes(market)) die("Un avis UFC porte sur le marché 1 ou 2.");
   }
 
   const ko = new Date(kickoff);
@@ -259,7 +270,7 @@ async function cmdAdd() {
 
   const matchId = (e.MATCH_ID || "").trim() || null;
   let teams = null;
-  if (!legs && matchId) {
+  if (!legs && matchId && !usesEventId) {
     try {
       teams = await fetchMatch(matchId);
       if (teams) console.log(`Équipes reconnues : ${teams.home.name} – ${teams.away.name}`);
@@ -269,11 +280,11 @@ async function cmdAdd() {
   }
 
   // Sans jeton football-data, les noms viennent de l'appelant.
-  if (!legs && !teams && (e.HOME_TEAM || "").trim() && (e.AWAY_TEAM || "").trim()) {
-    teams = {
-      home: { name: e.HOME_TEAM.trim(), crest: null },
-      away: { name: e.AWAY_TEAM.trim(), crest: null },
-    };
+  const split = match.split(/\s+[-–]\s+/);
+  const homeName = (e.HOME_TEAM || "").trim() || (split.length === 2 ? split[0] : "");
+  const awayName = (e.AWAY_TEAM || "").trim() || (split.length === 2 ? split[1] : "");
+  if (!legs && !teams && homeName && awayName) {
+    teams = { home: { name: homeName, crest: null }, away: { name: awayName, crest: null } };
   }
 
   const db = await load();
@@ -286,13 +297,16 @@ async function cmdAdd() {
     legs,
     label: (e.LABEL || "").trim() || market || "Combiné",
     kickoff: ko.toISOString(),
-    matchId: legs ? null : matchId,
+    matchId: legs || usesEventId ? null : matchId,
+    ...(usesEventId ? { eventId: matchId } : {}),
+    ...(isUfc ? { sport: "mma", fighter: market === "1" ? homeName : awayName } : {}),
+    ...(confidence ? { confidence } : {}),
     teams,
     stakePct,
     why: (e.WHY || "").trim(),
     caveat: (e.CAVEAT || "").trim(),
     odds: null,
-    oddsTaken: null,
+    oddsTaken: oddsGiven > 1 ? oddsGiven : null,
     oddsClose: null,
     status: "pending",
     score: null,
@@ -571,7 +585,7 @@ const SPORT_HINTS = {
   PL: ["epl", "premier_league"], PD: ["spain_la_liga"], BL1: ["germany_bundesliga"],
   SA: ["italy_serie_a"], FL1: ["france_ligue_one"], DED: ["netherlands_eredivisie"],
   PPL: ["portugal_primeira_liga"], ELC: ["efl_champ"], BSA: ["brazil_campeonato"],
-  CL: ["uefa_champs_league"], EC: ["uefa_european_championship"], WC: ["fifa_world_cup"],
+  UNL: ["uefa_nations_league"], CL: ["uefa_champs_league"], EC: ["uefa_european_championship"], WC: ["fifa_world_cup"],
 };
 
 const norm = (s) =>
@@ -634,7 +648,7 @@ async function cmdAutoOdds() {
 
   const db = await load();
   const pending = db.picks.filter(
-    (p) => p.status === "pending" && !p.legs && p.matchId && p.sport !== "mma"
+    (p) => p.status === "pending" && !p.legs && (p.matchId || p.comp === "UNL") && p.sport !== "mma"
   );
   if (!pending.length) return console.log("Aucun pari en attente.");
 
@@ -1180,6 +1194,171 @@ async function cmdValue() {
 }
 
 
+/* ======================================================================
+   TRÊVE — SUIVI LIGUE DES NATIONS, adopté le 8 novembre 2026.
+
+   Même règle que les erreurs de cote : tous les écarts positifs face à
+   Pinnacle, cote de 1,25 à 3,00, un pari par match. Calendrier, résultats et
+   cotes viennent de The Odds API (football-data ne couvre pas la compétition).
+   JAMAIS BACKTESTÉ : l'historique disponible ne couvre que les championnats.
+   ====================================================================== */
+
+const UNL_SPORT = "soccer_uefa_nations_league";
+const TREVE_DAYS = Number(process.env.TREVE_DAYS || 4);
+
+async function cmdTreve() {
+  const key = process.env.ODDS_API_KEY;
+  if (!key) die("ODDS_API_KEY absente.");
+
+  const sports = await (await fetch(`${OA}/sports?apiKey=${key}`)).json();
+  if (!Array.isArray(sports)) die(`Liste des sports illisible : ${JSON.stringify(sports).slice(0, 200)}`);
+  const sport = sports.find((x) => x.key === UNL_SPORT);
+  if (!sport || sport.active === false) return console.log("Ligue des Nations inactive : rien à faire.");
+
+  const res = await fetch(
+    `${OA}/sports/${UNL_SPORT}/odds?apiKey=${key}&regions=eu&markets=h2h,totals&oddsFormat=decimal`
+  );
+  if (!res.ok) die(`The Odds API a répondu ${res.status}`);
+  console.log(`Crédits restants : ${res.headers.get("x-requests-remaining")}`);
+  const events = await res.json();
+
+  const db = await load();
+  const published = new Set(db.picks.filter((p) => p.eventId).map((p) => p.eventId));
+  const now = Date.now();
+  const stats = { matchs: 0, sansPinnacle: 0, sansPrixFr: 0, horsCote: 0 };
+  const fixtures = [], tops = [];
+
+  for (const ev of events) {
+    const t = Date.parse(ev.commence_time);
+    if (t <= now + 30 * 60000 || t > now + TREVE_DAYS * 864e5 || published.has(ev.id)) continue;
+    stats.matchs++;
+    const fair = pinnacleFair(ev.bookmakers, ev.home_team, ev.away_team);
+    fixtures.push({
+      eventId: ev.id, comp: "UNL", kickoff: ev.commence_time, home: ev.home_team, away: ev.away_team,
+      markets: ["1", "X", "2", "O2.5", "U2.5"].map((k) => ({
+        market: k,
+        best: best(priceFrom(ev.bookmakers, k, ev.home_team, ev.away_team)),
+        pinnacleProb: fair?.[k] ? Number(fair[k].toFixed(4)) : null,
+      })),
+    });
+    if (!fair) { stats.sansPinnacle++; continue; }
+    let top = null;
+    for (const [market, f] of Object.entries(fair)) {
+      const o = priceFrom(ev.bookmakers, market, ev.home_team, ev.away_team);
+      if (!o) { stats.sansPrixFr++; continue; }
+      const price = best(o);
+      if (price < VALUE_MIN_ODDS || price > VALUE_MAX_ODDS) { stats.horsCote++; continue; }
+      const edge = price * f - 1;
+      if (!top || edge > top.edge) top = { ev, market, odds: o, price, fair: f, edge };
+    }
+    if (top) tops.push(top);
+  }
+
+  await writeFile(
+    new URL("../data/candidates-treve.json", import.meta.url),
+    JSON.stringify({ updatedAt: new Date().toISOString(), fixtures }, null, 2) + "\n"
+  );
+  tops.sort((a, b) => b.edge - a.edge);
+  const chosen = tops.filter((c) => c.edge > 0);
+  const bestEdge = tops[0] ? `${(tops[0].edge * 100).toFixed(1)} %` : "aucun";
+  console.log(`Bilan : ${JSON.stringify(stats)} · ${tops.length} candidat(s) · meilleur écart ${bestEdge}.`);
+  if (!chosen.length) return console.log("Aucune erreur de cote sur ces matchs.");
+
+  chosen.forEach((c, i) => {
+    const h = c.ev.home_team, a = c.ev.away_team;
+    const LABELS = {
+      "1": `${h} gagne`, X: "Match nul", "2": `${a} gagne`,
+      "O2.5": "Plus de 2,5 buts", "U2.5": "Moins de 2,5 buts",
+    };
+    const pct = (c.edge * 100).toFixed(1);
+    db.picks.push({
+      id: "t" + Date.now().toString(36) + i,
+      publishedAt: new Date().toISOString(),
+      comp: "UNL",
+      match: `${h} – ${a}`,
+      market: c.market,
+      legs: null,
+      label: LABELS[c.market],
+      kickoff: c.ev.commence_time,
+      matchId: null,
+      eventId: c.ev.id,
+      teams: { home: { name: h, crest: null }, away: { name: a, crest: null } },
+      stakePct: 0.01,
+      modelProb: Number(c.fair.toFixed(4)),
+      modelEdge: Number(c.edge.toFixed(4)),
+      why:
+        `Meilleure cote française ${c.price.toFixed(2)}, contre un prix équitable ` +
+        `Pinnacle de ${(1 / c.fair).toFixed(2)} : écart de +${pct} %.`,
+      caveat:
+        "Suivi jamais backtesté. Les matchs de sélections sont moins liquides, et " +
+        "un écart peut venir d'une cote Pinnacle en retard.",
+      odds: c.odds,
+      oddsTaken: c.price,
+      oddsClose: null,
+      status: "pending",
+      score: null,
+      auto: "ecart-pinnacle",
+      rule: "treve-v1-2026-11-08",
+      track: "treve",
+    });
+    console.log(`Retenu : ${h} – ${a} · ${c.market} @ ${c.price.toFixed(2)} · écart ${pct} %`);
+  });
+  await save(db);
+  console.log(`${chosen.length} pari(s) publié(s).`);
+}
+
+async function cmdTreveSettle() {
+  const key = process.env.ODDS_API_KEY;
+  if (!key) die("ODDS_API_KEY absente.");
+
+  const db = await load();
+  const due = db.picks.filter(
+    (p) => p.comp === "UNL" && p.status === "pending" && Date.now() - Date.parse(p.kickoff) > 2.5 * 36e5
+  );
+  if (!due.length) return console.log("Aucun match terminé à régler.");
+
+  const res = await fetch(`${OA}/sports/${UNL_SPORT}/scores?apiKey=${key}&daysFrom=3`);
+  if (!res.ok) die(`The Odds API scores → ${res.status}`);
+  const events = await res.json();
+  const pair = (a, b) => [norm(a), norm(b)].sort().join("|");
+  let done = 0, manual = 0;
+
+  for (const p of due) {
+    const names = pair(p.teams?.home?.name || "", p.teams?.away?.name || "");
+    const ev =
+      events.find((e) => e.id === p.eventId && e.completed) ||
+      events.find((e) => e.completed && pair(e.home_team, e.away_team) === names);
+    if (!ev) {
+      if (Date.now() - Date.parse(p.kickoff) > 4 * 864e5 && !p.needsManual) {
+        p.needsManual = true;
+        manual++;
+        console.log(`::warning::${p.match} : hors fenêtre de l'API, règlement manuel requis (${p.id}).`);
+      }
+      continue;
+    }
+    const goals = (n) => Number((ev.scores || []).find((x) => x.name === n)?.score);
+    const reversed = norm(ev.home_team) !== norm(p.teams.home.name);
+    const home = goals(reversed ? ev.away_team : ev.home_team);
+    const away = goals(reversed ? ev.home_team : ev.away_team);
+    const issue = Number.isFinite(home) && Number.isFinite(away) ? settle(p.market, home, away) : null;
+    if (!issue) {
+      p.needsManual = true;
+      manual++;
+      console.log(`${p.match} : score illisible, règlement manuel requis.`);
+      continue;
+    }
+    p.score = `${home}-${away}`;
+    p.status = issue;
+    p.settledAt = new Date().toISOString();
+    delete p.needsManual;
+    done++;
+    console.log(`${p.match} ${p.score} → ${issue}`);
+  }
+  if (done || manual) await save(db);
+  console.log(`${done} réglé(s), ${manual} en règlement manuel.`);
+}
+
+
 /* ---------------------------------------------------------------- veto
    Écarte un pari sur une information que le modèle n'a pas. Le pari reste
    suivi et réglé normalement : on mesure ensuite si les vetos ont fait
@@ -1230,24 +1409,21 @@ async function cmdVeto() {
 
 
 /* ======================================================================
-   UFC — RÈGLE v2, adoptée le 8 novembre 2026 (v1 : 1,01 à 1,20).
+   UFC — DEUX SUIVIS depuis le 8 novembre 2026.
 
-   Aucun modèle. Aucune sélection. On mise une unité sur tout combattant
-   dont la cote de consensus se situe entre 1,01 et 1,30, sans exception.
+   « UFC avis » : seuls sont publiés les favoris retenus après analyse du style
+   et du contexte, avec une raison écrite avant le combat. Cette sélection n'a
+   jamais été testée.
 
-   Sur 6 916 combats depuis 2010 : tranche 1,01-1,30, +1,28 % jusqu'en 2020
-   (903 paris, t = 0,85) et +2,23 % depuis 2021 (519 paris, t = 1,19). Le
-   rendement retombe à zéro jusqu'à 1,40 et devient négatif au-delà : ne pas
-   étendre davantage. Le signal n'est pas établi, seulement non réfuté, et
-   la borne de 1,30 a été choisie après avoir vu ces chiffres.
-
-   Le prix retenu est le meilleur prix français disponible, sinon le
-   consensus. La v1 prenait le maximum de tous les bookmakers européens, ce
-   qui gonflait artificiellement le rendement.
+   « UFC témoin » : tout combattant coté de 1,01 à 1,30, sans sélection, suivi
+   sans être affiché comme pari. Il sert de point de comparaison : si les avis
+   ne font pas mieux que lui, la sélection n'apporte rien. Historique sur 6 916
+   combats : +1,28 % jusqu'en 2020 (t = 0,85), +2,23 % depuis 2021 (t = 1,19).
    ====================================================================== */
 
 const UFC_MIN = Number(process.env.UFC_MIN_ODDS || 1.01);
 const UFC_MAX = Number(process.env.UFC_MAX_ODDS || 1.30);
+const UFC_CANDIDATE_MAX = Number(process.env.UFC_CANDIDATE_MAX || 1.50);
 const MMA_SPORT = "mma_mixed_martial_arts";
 
 async function cmdUfc() {
@@ -1273,6 +1449,7 @@ async function cmdUfc() {
     db.picks.filter((p) => p.sport === "mma" && p.fighter).map((p) => fightKey(p.eventId, p.fighter))
   );
   let kept = 0;
+  const candidates = [];
 
   for (const ev of events) {
     if (new Date(ev.commence_time) <= Date.now()) continue;
@@ -1289,7 +1466,7 @@ async function cmdUfc() {
     for (const [fighter, list] of Object.entries(prices)) {
       if (list.length < MIN_BOOKS) continue;
       const ref = median(list);       // consensus, sert à décider
-      if (ref < UFC_MIN || ref > UFC_MAX) continue;
+      if (ref < UFC_MIN || ref > UFC_CANDIDATE_MAX) continue;
 
       const french = {};
       for (const [label, key] of Object.entries(WANT_BOOKS)) {
@@ -1301,6 +1478,12 @@ async function cmdUfc() {
       const source = best(french) ? "meilleure cote française" : "consensus, aucune cote française";
 
       const side = fighter === ev.home_team ? "1" : "2";
+      candidates.push({
+        eventId: ev.id, comp: "UFC", kickoff: ev.commence_time,
+        home: ev.home_team, away: ev.away_team, fighter, market: side,
+        consensus: Number(ref.toFixed(2)), best: Number(price.toFixed(2)), source,
+      });
+      if (ref > UFC_MAX) continue;       // candidat aux avis, pas au témoin
       if (seen.has(fightKey(ev.id, fighter))) continue;
 
       const opponent = fighter === ev.home_team ? ev.away_team : ev.home_team;
@@ -1334,7 +1517,8 @@ async function cmdUfc() {
         status: "pending",
         score: null,
         auto: "ufc-regle-figee",
-        rule: "ufc-v2-2026-11-08",
+        rule: "ufc-v3-2026-11-08",
+        track: "ufc-temoin",
       });
       seen.add(fightKey(ev.id, fighter));
       kept++;
@@ -1342,9 +1526,14 @@ async function cmdUfc() {
     }
   }
 
-  if (!kept) return console.log(`Aucun combattant coté entre ${UFC_MIN} et ${UFC_MAX}.`);
+  await writeFile(
+    new URL("../data/candidates-ufc.json", import.meta.url),
+    JSON.stringify({ updatedAt: new Date().toISOString(), candidates }, null, 2) + "\n"
+  );
+  console.log(`${candidates.length} favori(s) candidat(s) aux avis.`);
+  if (!kept) return console.log(`Aucun nouveau combattant témoin entre ${UFC_MIN} et ${UFC_MAX}.`);
   await save(db);
-  console.log(`${kept} pari(s) publié(s).`);
+  console.log(`${kept} combat(s) témoin(s) enregistré(s).`);
 }
 
 // Règlement via l'endpoint scores de The Odds API. La forme exacte de la
@@ -1409,7 +1598,7 @@ async function cmdUfcSettle() {
 
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, value: cmdValue, veto: cmdVeto, ufc: cmdUfc, ufcsettle: cmdUfcSettle };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, value: cmdValue, treve: cmdTreve, trevesettle: cmdTreveSettle, veto: cmdVeto, ufc: cmdUfc, ufcsettle: cmdUfcSettle };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
