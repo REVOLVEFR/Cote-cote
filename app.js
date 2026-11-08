@@ -39,6 +39,13 @@ const avgOdds = (o) => {
   return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
 };
 
+const TRACKS = {
+  all: "Tout", "erreur-cote": "Erreurs de cote", avis: "Avis", ufc: "UFC", top5: "Lot imposé du 8 nov.",
+};
+let TRACK = "all";
+const trackOf = (p) =>
+  p.track || (p.sport === "mma" ? "ufc" : p.rule === "foot-v2-2026-11-08" ? "top5" : "autre");
+
 const isParlay = (p) => Array.isArray(p.legs) && p.legs.length > 1;
 const stakeOf = (p) => (p.stakePct || BASE_STAKE) * CAPITAL;
 // Gain en unités de mise : +(cote−1) si gagné, −1 si perdu, 0 si remboursé.
@@ -207,7 +214,7 @@ function oddsBlock(p) {
 function card(p) {
   const comp = isParlay(p) ? "Combiné" : COMPETITIONS[p.comp] || p.comp;
   return `<article class="pick">
-    <div class="meta"><span class="comp">${esc(comp)}</span>
+    <div class="meta"><span class="comp">${esc(comp)}${TRACKS[trackOf(p)] && trackOf(p) !== "ufc" ? ` · ${esc(TRACKS[trackOf(p)])}` : ""}</span>
       <span>${esc(when(p.kickoff))}</span></div>
     ${heading(p)}
     <div class="bet">${esc(p.label)}</div>
@@ -352,9 +359,14 @@ function bankChart(real, flat) {
 
 async function viewRecord() {
   const { picks } = await db();
-  const live = picks.filter((p) => !p.vetoed);
+  const allLive = picks.filter((p) => !p.vetoed);
+  const live = TRACK === "all" ? allLive : allLive.filter((p) => trackOf(p) === TRACK);
   const vetoed = picks.filter((p) => p.vetoed);
   const s = measures(live);
+  const trackBar = Object.entries(TRACKS).map(([k, label]) => {
+    const n = k === "all" ? allLive.length : allLive.filter((p) => trackOf(p) === k).length;
+    return `<button class="track${k === TRACK ? " on" : ""}" data-track="${k}">${label} · ${n}</button>`;
+  }).join("");
   const v = vetoed.length ? measures(vetoed) : null;
   const verdictText =
     s.n === 0
@@ -393,10 +405,11 @@ async function viewRecord() {
   app.innerHTML = `<div class="lede"><h1>Bilan</h1>
       <p>Ce que les chiffres autorisent à conclure — et ce qu'ils n'autorisent pas.</p></div>
     <div class="fictif"><strong>Capital fictif.</strong> Aucun argent réel n'est engagé.
-      Depuis le 8 novembre 2026, le football publie les 5 plus grands écarts du week-end
-      face au prix équitable de Pinnacle, et l'UFC tout combattant coté de 1,01 à 1,30.
-      Ces règles n'ont pas de rendement positif démontré : le backtest reste compatible
-      avec une perte. Les paris antérieurs relèvent de l'ancienne règle UFC (1,01 à 1,20).</div>
+      Depuis le 8 novembre 2026, le football publie toutes les erreurs de cote du week-end
+      face au prix équitable de Pinnacle, complétées par des avis motivés jusqu'à 5 paris
+      par semaine ; l'UFC joue tout combattant coté de 1,01 à 1,30. Aucune de ces méthodes
+      n'a de rendement positif démontré. Chaque suivi se lit séparément.</div>
+    <div class="tracks">${trackBar}</div>
     <div class="verdict"><h2>${esc(verdictText[0])}</h2><p>${esc(verdictText[1])}</p></div>
 
     <div class="sec"><h3>Un capital de ${eur(CAPITAL, 0)}, pari après pari</h3>
@@ -656,6 +669,8 @@ function go(name) {
 }
 
 document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-track]");
+  if (t) { TRACK = t.dataset.track; go("record"); return; }
   const el = e.target.closest("[data-go]");
   if (!el) return;
   e.preventDefault();
