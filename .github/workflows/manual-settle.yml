@@ -1,0 +1,40 @@
+name: Regler un pari a la main
+
+on:
+  workflow_dispatch:
+    inputs:
+      pick_id:
+        description: Identifiant du pari
+        required: true
+      status:
+        description: Resultat
+        required: true
+        type: choice
+        options: [won, lost, void]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs manual
+        env:
+          PICK_ID: ${{ inputs.pick_id }}
+          STATUS: ${{ inputs.status }}
+      - name: Commiter
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git diff --staged --quiet || git commit -m "Reglement manuel"
+          git push
