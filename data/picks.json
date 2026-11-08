@@ -633,7 +633,202 @@
       "auto": "ufc-regle-figee",
       "settledAt": "2026-11-08T18:30:00.000Z",
       "settledManually": true
+    },
+    {
+      "id": "vmw85sdn40",
+      "publishedAt": "2026-11-08T18:21:36.400Z",
+      "comp": "DED",
+      "match": "Utrecht – NEC",
+      "market": "1",
+      "legs": null,
+      "label": "Utrecht gagne",
+      "kickoff": "2026-11-08T19:00:00Z",
+      "matchId": "558838",
+      "teams": {
+        "home": {
+          "name": "Utrecht",
+          "fullName": "FC Utrecht",
+          "crest": "https://crests.football-data.org/676.png"
+        },
+        "away": {
+          "name": "NEC",
+          "fullName": "NEC",
+          "crest": "https://crests.football-data.org/1915.png"
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.3701,
+      "modelEdge": -0.0636,
+      "why": "Meilleure cote française 2.53, contre un prix équitable Pinnacle de 2.70 : écart de -6.4 %. Un des 5 plus grands écarts du week-end.",
+      "caveat": "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur.",
+      "odds": {
+        "betclic": 2.53,
+        "unibet": 2.35,
+        "winamax": 2.4
+      },
+      "oddsTaken": 2.53,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ecart-pinnacle",
+      "rule": "foot-v2-2026-11-08"
+    },
+    {
+      "id": "vmw85sdn41",
+      "publishedAt": "2026-11-08T18:21:36.400Z",
+      "comp": "PD",
+      "match": "Atleti – Barça",
+      "market": "2",
+      "legs": null,
+      "label": "Barça gagne",
+      "kickoff": "2026-11-08T20:00:00Z",
+      "matchId": "564746",
+      "teams": {
+        "home": {
+          "name": "Atleti",
+          "fullName": "Club Atlético de Madrid",
+          "crest": "https://crests.football-data.org/78.png"
+        },
+        "away": {
+          "name": "Barça",
+          "fullName": "FC Barcelona",
+          "crest": "https://crests.football-data.org/81.png"
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.519,
+      "modelEdge": -0.0761,
+      "why": "Meilleure cote française 1.78, contre un prix équitable Pinnacle de 1.93 : écart de -7.6 %. Un des 5 plus grands écarts du week-end.",
+      "caveat": "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur.",
+      "odds": {
+        "betclic": 1.78,
+        "unibet": null,
+        "winamax": 1.72
+      },
+      "oddsTaken": 1.78,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ecart-pinnacle",
+      "rule": "foot-v2-2026-11-08"
+    },
+    {
+      "id": "vmw85sdn42",
+      "publishedAt": "2026-11-08T18:21:36.400Z",
+      "comp": "FL1",
+      "match": "RC Lens – Marseille",
+      "market": "1",
+      "legs": null,
+      "label": "RC Lens gagne",
+      "kickoff": "2026-11-08T19:45:00Z",
+      "matchId": "559630",
+      "teams": {
+        "home": {
+          "name": "RC Lens",
+          "fullName": "Racing Club de Lens",
+          "crest": "https://crests.football-data.org/546.png"
+        },
+        "away": {
+          "name": "Marseille",
+          "fullName": "Olympique de Marseille",
+          "crest": "https://crests.football-data.org/516.png"
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.4177,
+      "modelEdge": -0.081,
+      "why": "Meilleure cote française 2.20, contre un prix équitable Pinnacle de 2.39 : écart de -8.1 %. Un des 5 plus grands écarts du week-end.",
+      "caveat": "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur.",
+      "odds": {
+        "betclic": null,
+        "unibet": 2.2,
+        "winamax": 2.15
+      },
+      "oddsTaken": 2.2,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ecart-pinnacle",
+      "rule": "foot-v2-2026-11-08"
+    },
+    {
+      "id": "vmw85sdn43",
+      "publishedAt": "2026-11-08T18:21:36.400Z",
+      "comp": "PPL",
+      "match": "Rio Ave – Braga",
+      "market": "2",
+      "legs": null,
+      "label": "Braga gagne",
+      "kickoff": "2026-11-08T20:30:00Z",
+      "matchId": "567354",
+      "teams": {
+        "home": {
+          "name": "Rio Ave",
+          "fullName": "Rio Ave FC",
+          "crest": "https://crests.football-data.org/496.png"
+        },
+        "away": {
+          "name": "Braga",
+          "fullName": "Sporting Clube de Braga",
+          "crest": "https://crests.football-data.org/5613.png"
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.6411,
+      "modelEdge": -0.0833,
+      "why": "Meilleure cote française 1.43, contre un prix équitable Pinnacle de 1.56 : écart de -8.3 %. Un des 5 plus grands écarts du week-end.",
+      "caveat": "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur.",
+      "odds": {
+        "betclic": 1.43,
+        "unibet": 1.36,
+        "winamax": 1.42
+      },
+      "oddsTaken": 1.43,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ecart-pinnacle",
+      "rule": "foot-v2-2026-11-08"
+    },
+    {
+      "id": "vmw85sdn44",
+      "publishedAt": "2026-11-08T18:21:36.400Z",
+      "comp": "SA",
+      "match": "Fiorentina – Juventus",
+      "market": "2",
+      "legs": null,
+      "label": "Juventus gagne",
+      "kickoff": "2026-11-08T19:45:00Z",
+      "matchId": "558529",
+      "teams": {
+        "home": {
+          "name": "Fiorentina",
+          "fullName": "ACF Fiorentina",
+          "crest": "https://crests.football-data.org/99.png"
+        },
+        "away": {
+          "name": "Juventus",
+          "fullName": "Juventus FC",
+          "crest": "https://crests.football-data.org/109.png"
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.4397,
+      "modelEdge": -0.1205,
+      "why": "Meilleure cote française 2.00, contre un prix équitable Pinnacle de 2.27 : écart de -12.1 %. Un des 5 plus grands écarts du week-end.",
+      "caveat": "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur.",
+      "odds": {
+        "betclic": 2,
+        "unibet": 1.95,
+        "winamax": 2
+      },
+      "oddsTaken": 2,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ecart-pinnacle",
+      "rule": "foot-v2-2026-11-08"
     }
   ],
-  "updatedAt": "2026-11-08T18:30:00.000Z"
+  "updatedAt": "2026-11-08T18:21:36.400Z"
 }
