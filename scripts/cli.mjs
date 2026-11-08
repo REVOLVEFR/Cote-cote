@@ -216,7 +216,13 @@ async function cmdAdd() {
   const kickoff = (e.KICKOFF || "").trim();
   const stakePct = readStake(e.STAKE_PCT);
 
+  const track = (e.TRACK || "").trim() || null;
   if (!match) die("La rencontre est obligatoire.");
+  if (track === "avis") {
+    if ((e.WHY || "").trim().length < 40) die("Un avis exige une raison précise, en 40 caractères au minimum.");
+    if (!(e.CAVEAT || "").trim()) die("Un avis doit dire ce qui peut le faire échouer.");
+    if (!(e.MATCH_ID || "").trim()) die("Un avis exige l'identifiant du match, sinon il ne sera jamais réglé.");
+  }
 
   const ko = new Date(kickoff);
   if (Number.isNaN(+ko)) die(`Coup d'envoi illisible : ${kickoff}`);
@@ -262,6 +268,14 @@ async function cmdAdd() {
     }
   }
 
+  // Sans jeton football-data, les noms viennent de l'appelant.
+  if (!legs && !teams && (e.HOME_TEAM || "").trim() && (e.AWAY_TEAM || "").trim()) {
+    teams = {
+      home: { name: e.HOME_TEAM.trim(), crest: null },
+      away: { name: e.AWAY_TEAM.trim(), crest: null },
+    };
+  }
+
   const db = await load();
   const pick = {
     id: "p" + Date.now().toString(36),
@@ -282,6 +296,7 @@ async function cmdAdd() {
     oddsClose: null,
     status: "pending",
     score: null,
+    ...(track ? { track } : {}),
   };
   db.picks.push(pick);
   await save(db);
@@ -993,24 +1008,21 @@ async function cmdModel() {
 
 
 /* ======================================================================
-   FOOTBALL — RÈGLE v2, adoptée le 8 novembre 2026. Remplace le modèle de
-   Poisson, qui n'a publié aucun pari entre septembre et novembre.
+   FOOTBALL — SUIVI « ERREURS DE COTE », adopté le 8 novembre 2026.
 
    Chaque vendredi, sur les matchs du vendredi au lundi des sept championnats :
    on compare le meilleur prix Winamax, Betclic ou Unibet au prix équitable de
    Pinnacle (marge retirée), sur 1X2 et ±2,5 buts, cote entre 1,25 et 3,00.
-   On publie les 5 plus grands écarts, un seul pari par match, MÊME NÉGATIFS :
-   le volume a été préféré à la sélectivité.
+   On publie TOUS les écarts positifs, un seul pari par match, et rien d'autre.
+   Le lot est complété jusqu'à 5 paris par semaine avec le suivi « avis ».
 
-   Backtest 2019-2026 sur trois bookmakers de substitution (les cotes
-   françaises n'existent pas dans l'historique) : rendement −1,5 % puis +2,9 %
-   en validation, jamais significatif, écart à la clôture d'environ −0,7 %.
-   Ce n'est PAS une méthode gagnante démontrée. C'est la moins perdante des
-   méthodes à 5 paris imposés qui ont été testées.
+   Backtest sur trois bookmakers de substitution (les cotes françaises n'existent
+   pas dans l'historique) : +0,3 % sur 232 paris jusqu'en 2023, +26,7 % sur 50
+   paris depuis (t = 1,58) ; −28,4 % sur 19 paris avec Bet365 seul. Rien n'est
+   significatif : le signal n'est pas établi.
    ====================================================================== */
 
 const VALUE_COMPS = ["PL", "PD", "BL1", "SA", "FL1", "DED", "PPL"];
-const VALUE_PICKS = Number(process.env.VALUE_PICKS || 5);
 const VALUE_MIN_ODDS = Number(process.env.VALUE_MIN_ODDS || 1.25);
 const VALUE_MAX_ODDS = Number(process.env.VALUE_MAX_ODDS || 3);
 const WEEKEND_DAYS = new Set([5, 6, 0, 1]); // vendredi à lundi, UTC
@@ -1069,6 +1081,7 @@ async function cmdValue() {
 
   const stats = { apparies: 0, sansEvenement: 0, sansPinnacle: 0, sansPrixFr: 0, horsCote: 0 };
   const best1 = [];
+  const fixtures = []; // publié pour les avis du vendredi
 
   for (const comp of [...new Set(upcoming.map((m) => m.competition.code))]) {
     const hints = SPORT_HINTS[comp] || [];
@@ -1090,6 +1103,14 @@ async function cmdValue() {
       stats.apparies++;
 
       const fair = pinnacleFair(ev.bookmakers, ev.home_team, ev.away_team);
+      fixtures.push({
+        matchId: String(m.id), comp, kickoff: m.utcDate, home: hn, away: an,
+        markets: ["1", "X", "2", "O2.5", "U2.5"].map((k) => ({
+          market: k,
+          best: best(priceFrom(ev.bookmakers, k, ev.home_team, ev.away_team)),
+          pinnacleProb: fair?.[k] ? Number(fair[k].toFixed(4)) : null,
+        })),
+      });
       if (!fair) { stats.sansPinnacle++; continue; }
 
       let top = null;
@@ -1106,12 +1127,14 @@ async function cmdValue() {
   }
 
   best1.sort((a, b) => b.edge - a.edge);
-  const chosen = best1.slice(0, VALUE_PICKS);
-  console.log(`Bilan : ${JSON.stringify(stats)} · ${best1.length} candidat(s).`);
-  if (chosen.length < VALUE_PICKS) {
-    console.log(`::warning::${chosen.length} pari(s) seulement sur ${VALUE_PICKS} attendus.`);
-  }
-  if (!chosen.length) return console.log("Aucun pari publiable.");
+  await writeFile(
+    new URL("../data/candidates.json", import.meta.url),
+    JSON.stringify({ updatedAt: new Date().toISOString(), fixtures }, null, 2) + "\n"
+  );
+  const chosen = best1.filter((c) => c.edge > 0);
+  const top = best1[0] ? `${(best1[0].edge * 100).toFixed(1)} %` : "aucun";
+  console.log(`Bilan : ${JSON.stringify(stats)} · ${best1.length} candidat(s) · meilleur écart ${top}.`);
+  if (!chosen.length) return console.log("Aucune erreur de cote cette semaine : les avis compléteront.");
 
   chosen.forEach((c, i) => {
     const LABELS = {
@@ -1138,19 +1161,17 @@ async function cmdValue() {
       modelEdge: Number(c.edge.toFixed(4)),
       why:
         `Meilleure cote française ${c.price.toFixed(2)}, contre un prix équitable ` +
-        `Pinnacle de ${(1 / c.fair).toFixed(2)} : écart de ${c.edge >= 0 ? "+" : ""}${pct} %. ` +
-        `Un des ${VALUE_PICKS} plus grands écarts du week-end.`,
+        `Pinnacle de ${(1 / c.fair).toFixed(2)} : écart de +${pct} %.`,
       caveat:
-        c.edge < 0
-          ? "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur."
-          : "Un écart faible peut venir d'une cote Pinnacle en retard plutôt que d'une vraie erreur de prix.",
+        "Un écart faible peut venir d'une cote Pinnacle en retard plutôt que d'une vraie erreur de prix.",
       odds: c.odds,
       oddsTaken: c.price,
       oddsClose: null,
       status: "pending",
       score: null,
       auto: "ecart-pinnacle",
-      rule: "foot-v2-2026-11-08",
+      rule: "foot-v3-2026-11-08",
+      track: "erreur-cote",
     });
     console.log(`Retenu : ${c.hn} – ${c.an} · ${c.market} @ ${c.price.toFixed(2)} · écart ${pct} %`);
   });
