@@ -10,7 +10,7 @@ on:
         description: Championnat
         required: true
         type: choice
-        options: [PL, PD, BL1, SA, FL1, DED, PPL]
+        options: [PL, PD, BL1, SA, FL1, DED, PPL, UNL, UFC]
       match:
         description: "Intitule (ex. Brest - PSG)"
         required: true
@@ -24,7 +24,7 @@ on:
         description: "Coup d'envoi en UTC (2026-11-21T18:45:00Z)"
         required: true
       match_id:
-        description: Identifiant football-data du match
+        description: "Identifiant football-data, ou eventId pour UNL et UFC"
         required: true
       why:
         description: La raison, precise et verifiable
@@ -32,6 +32,14 @@ on:
       caveat:
         description: Ce qui peut le faire echouer
         required: true
+      confidence:
+        description: Niveau de confiance
+        required: true
+        type: choice
+        options: ["Modérée", "Forte"]
+      odds:
+        description: "Cote prise (obligatoire pour UFC, sinon vide)"
+        required: false
 
 permissions:
   contents: write
@@ -61,6 +69,8 @@ jobs:
           STAKE_PCT: "1"
           WHY: ${{ inputs.why }}
           CAVEAT: ${{ inputs.caveat }}
+          CONFIDENCE: ${{ inputs.confidence }}
+          ODDS: ${{ inputs.odds }}
       - name: Commiter l'avis
         run: |
           git config user.name "cote-a-cote"
