@@ -12,7 +12,7 @@ const COMPETITIONS = {
   PL: "Premier League", PD: "Liga", BL1: "Bundesliga", SA: "Serie A",
   FL1: "Ligue 1", DED: "Eredivisie", PPL: "Liga Portugal", ELC: "Championship",
   BSA: "Brasileirão", CL: "Ligue des Champions", EC: "Championnat d'Europe",
-  WC: "Coupe du Monde", UFC: "UFC",
+  WC: "Coupe du Monde", UFC: "UFC", UNL: "Ligue des Nations",
 };
 
 let DB = null;
@@ -40,7 +40,7 @@ const avgOdds = (o) => {
 };
 
 const TRACKS = {
-  all: "Tout", "erreur-cote": "Erreurs de cote", avis: "Avis", ufc: "UFC", top5: "Lot imposé du 8 nov.",
+  all: "Tout", "erreur-cote": "Erreurs de cote", avis: "Avis", treve: "Trêve", "ufc-avis": "UFC avis", "ufc-temoin": "UFC témoin", ufc: "UFC ancienne règle", top5: "Lot imposé du 8 nov.",
 };
 let TRACK = "all";
 const trackOf = (p) =>
@@ -56,6 +56,9 @@ async function db() {
   const r = await fetch("data/picks.json", { cache: "no-store" });
   if (!r.ok) throw new Error("picks.json illisible");
   DB = await r.json();
+  // Le témoin UFC est mesuré, mais n'est ni un pari affiché ni du capital engagé.
+  DB.witness = DB.picks.filter((p) => p.track === "ufc-temoin");
+  DB.picks = DB.picks.filter((p) => p.track !== "ufc-temoin");
   return DB;
 }
 
@@ -214,7 +217,7 @@ function oddsBlock(p) {
 function card(p) {
   const comp = isParlay(p) ? "Combiné" : COMPETITIONS[p.comp] || p.comp;
   return `<article class="pick">
-    <div class="meta"><span class="comp">${esc(comp)}${TRACKS[trackOf(p)] && trackOf(p) !== "ufc" ? ` · ${esc(TRACKS[trackOf(p)])}` : ""}</span>
+    <div class="meta"><span class="comp">${esc(comp)}${TRACKS[trackOf(p)] && !["ufc", "ufc-avis"].includes(trackOf(p)) ? ` · ${esc(TRACKS[trackOf(p)])}` : ""}</span>
       <span>${esc(when(p.kickoff))}</span></div>
     ${heading(p)}
     <div class="bet">${esc(p.label)}</div>
@@ -223,6 +226,7 @@ function card(p) {
       <strong>${(p.modelProb * 100).toFixed(1)} %</strong> de chances à ce pari.
       Vérifiable : sur la durée, les paris annoncés à ce niveau doivent passer
       à peu près aussi souvent.</p>` : ""}
+    ${p.confidence ? `<p class="prob">Confiance annoncée : <strong>${esc(p.confidence)}</strong></p>` : ""}
     ${p.why ? `<p class="why">${esc(p.why)}</p>` : ""}
     ${p.caveat ? `<p class="cav">Ce qui peut le faire échouer : ${esc(p.caveat)}</p>` : ""}
     ${oddsBlock(p)}
@@ -358,13 +362,13 @@ function bankChart(real, flat) {
 }
 
 async function viewRecord() {
-  const { picks } = await db();
+  const { picks, witness } = await db();
   const allLive = picks.filter((p) => !p.vetoed);
-  const live = TRACK === "all" ? allLive : allLive.filter((p) => trackOf(p) === TRACK);
+  const live = TRACK === "all" ? allLive : TRACK === "ufc-temoin" ? witness : allLive.filter((p) => trackOf(p) === TRACK);
   const vetoed = picks.filter((p) => p.vetoed);
   const s = measures(live);
   const trackBar = Object.entries(TRACKS).map(([k, label]) => {
-    const n = k === "all" ? allLive.length : allLive.filter((p) => trackOf(p) === k).length;
+    const n = k === "all" ? allLive.length : k === "ufc-temoin" ? witness.length : allLive.filter((p) => trackOf(p) === k).length;
     return `<button class="track${k === TRACK ? " on" : ""}" data-track="${k}">${label} · ${n}</button>`;
   }).join("");
   const v = vetoed.length ? measures(vetoed) : null;
@@ -407,7 +411,9 @@ async function viewRecord() {
     <div class="fictif"><strong>Capital fictif.</strong> Aucun argent réel n'est engagé.
       Depuis le 8 novembre 2026, le football publie toutes les erreurs de cote du week-end
       face au prix équitable de Pinnacle, complétées par des avis motivés jusqu'à 5 paris
-      par semaine ; l'UFC joue tout combattant coté de 1,01 à 1,30. Aucune de ces méthodes
+      par semaine ; pendant les trêves, la Ligue des Nations suit la même logique, sans
+      backtest ; l'UFC ne retient que les favoris sélectionnés après analyse, comparés à un
+      témoin sans sélection (cotes de 1,01 à 1,30). Aucune de ces méthodes
       n'a de rendement positif démontré. Chaque suivi se lit séparément.</div>
     <div class="tracks">${trackBar}</div>
     <div class="verdict"><h2>${esc(verdictText[0])}</h2><p>${esc(verdictText[1])}</p></div>
