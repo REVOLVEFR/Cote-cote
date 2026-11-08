@@ -212,7 +212,7 @@ function card(p) {
     ${heading(p)}
     <div class="bet">${esc(p.label)}</div>
     ${legList(p)}
-    ${p.modelProb ? `<p class="prob">Le modèle donne
+    ${p.modelProb ? `<p class="prob">${p.auto === "poisson" ? "Le modèle donne" : "La cote de référence implique"}
       <strong>${(p.modelProb * 100).toFixed(1)} %</strong> de chances à ce pari.
       Vérifiable : sur la durée, les paris annoncés à ce niveau doivent passer
       à peu près aussi souvent.</p>` : ""}
@@ -393,11 +393,10 @@ async function viewRecord() {
   app.innerHTML = `<div class="lede"><h1>Bilan</h1>
       <p>Ce que les chiffres autorisent à conclure — et ce qu'ils n'autorisent pas.</p></div>
     <div class="fictif"><strong>Capital fictif.</strong> Aucun argent réel n'est engagé.
-      Un backtest sur 24 389 matchs et neuf saisons a conclu que ce modèle ne bat pas
-      la cote de clôture. Une seule règle n'y a pas été réfutée — probabilité au moins
-      égale à 70 %, cote au moins égale à 1,25 — et c'est elle qui est vérifiée ici,
-      sur des rencontres qu'elle n'a jamais vues. La règle a été figée avant la première
-      publication et ne sera pas modifiée.</div>
+      Depuis le 8 novembre 2026, le football publie les 5 plus grands écarts du week-end
+      face au prix équitable de Pinnacle, et l'UFC tout combattant coté de 1,01 à 1,30.
+      Ces règles n'ont pas de rendement positif démontré : le backtest reste compatible
+      avec une perte. Les paris antérieurs relèvent de l'ancienne règle UFC (1,01 à 1,20).</div>
     <div class="verdict"><h2>${esc(verdictText[0])}</h2><p>${esc(verdictText[1])}</p></div>
 
     <div class="sec"><h3>Un capital de ${eur(CAPITAL, 0)}, pari après pari</h3>
