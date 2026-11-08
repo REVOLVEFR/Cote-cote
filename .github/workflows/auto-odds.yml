@@ -2,7 +2,7 @@ name: Relever les cotes
 
 on:
   schedule:
-    - cron: "0 7,19 * * *"   # deux fois par jour, pour rester dans les 500 credits
+    - cron: "20 * * * *"   # aucun credit consomme sans pari proche du coup d'envoi
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,7 @@ jobs:
       - run: node scripts/cli.mjs autoodds
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          CLOSE_WINDOW_MIN: "90"
       - name: Commiter les cotes
         run: |
           git config user.name "cote-a-cote"
