@@ -547,7 +547,7 @@ const median = (xs) => {
   const h = v.length >> 1;
   return v.length % 2 ? v[h] : (v[h - 1] + v[h]) / 2;
 };
-const WANT_BOOKS = { betclic: "betclic_fr", unibet: "unibet_eu", winamax: "winamax_fr" };
+const WANT_BOOKS = { betclic: "betclic_fr", unibet: "unibet_fr", winamax: "winamax_fr" };
 const CLOSE_WINDOW_MIN = Number(process.env.CLOSE_WINDOW_MIN || 150);
 
 // Indices permettant de retrouver la cle de sport, plutot que de la coder en
@@ -570,6 +570,20 @@ function sameTeam(a, b) {
   const x = norm(a), y = norm(b);
   if (!x || !y) return false;
   return x === y || x.includes(y) || y.includes(x);
+}
+
+// Retrouve la rencontre chez The Odds API. Les deux sources ne nomment pas les
+// clubs pareil : on essaie nom court et nom complet, à l'heure près. Si un seul
+// événement à cette heure correspond à l'une des deux équipes, il est retenu.
+function findEvent(kickoff, homeNames, awayNames, events) {
+  const t = Date.parse(kickoff);
+  const near = events.filter((e) => Math.abs(Date.parse(e.commence_time) - t) <= 30 * 60000);
+  const isH = (e) => homeNames.filter(Boolean).some((n) => sameTeam(e.home_team, n));
+  const isA = (e) => awayNames.filter(Boolean).some((n) => sameTeam(e.away_team, n));
+  const both = near.filter((e) => isH(e) && isA(e));
+  if (both.length === 1) return both[0];
+  const one = near.filter((e) => isH(e) || isA(e));
+  return one.length === 1 ? one[0] : null;
 }
 
 function priceFrom(bk, market, homeName, awayName) {
@@ -639,8 +653,8 @@ async function cmdAutoOdds() {
 
     for (const p of need.filter((x) => x.comp === comp)) {
       const h = p.teams?.home?.name, a = p.teams?.away?.name;
-      const ev = events.find(
-        (e) => sameTeam(e.home_team, h || "") && sameTeam(e.away_team, a || "")
+      const ev = findEvent(
+        p.kickoff, [h, p.teams?.home?.fullName], [a, p.teams?.away?.fullName], events
       );
       if (!ev) { console.warn(`Pas d'événement pour ${p.match}.`); continue; }
 
@@ -978,6 +992,173 @@ async function cmdModel() {
 }
 
 
+/* ======================================================================
+   FOOTBALL — RÈGLE v2, adoptée le 8 novembre 2026. Remplace le modèle de
+   Poisson, qui n'a publié aucun pari entre septembre et novembre.
+
+   Chaque vendredi, sur les matchs du vendredi au lundi des sept championnats :
+   on compare le meilleur prix Winamax, Betclic ou Unibet au prix équitable de
+   Pinnacle (marge retirée), sur 1X2 et ±2,5 buts, cote entre 1,25 et 3,00.
+   On publie les 5 plus grands écarts, un seul pari par match, MÊME NÉGATIFS :
+   le volume a été préféré à la sélectivité.
+
+   Backtest 2019-2026 sur trois bookmakers de substitution (les cotes
+   françaises n'existent pas dans l'historique) : rendement −1,5 % puis +2,9 %
+   en validation, jamais significatif, écart à la clôture d'environ −0,7 %.
+   Ce n'est PAS une méthode gagnante démontrée. C'est la moins perdante des
+   méthodes à 5 paris imposés qui ont été testées.
+   ====================================================================== */
+
+const VALUE_COMPS = ["PL", "PD", "BL1", "SA", "FL1", "DED", "PPL"];
+const VALUE_PICKS = Number(process.env.VALUE_PICKS || 5);
+const VALUE_MIN_ODDS = Number(process.env.VALUE_MIN_ODDS || 1.25);
+const VALUE_MAX_ODDS = Number(process.env.VALUE_MAX_ODDS || 3);
+const WEEKEND_DAYS = new Set([5, 6, 0, 1]); // vendredi à lundi, UTC
+
+// Prix équitables de Pinnacle pour une rencontre, marge retirée.
+export function pinnacleFair(bookmakers, home, away) {
+  const b = (bookmakers || []).find((x) => x.key === "pinnacle");
+  if (!b) return null;
+  const fair = {};
+  const devig = (pairs) => {
+    if (pairs.some(([, q]) => !q)) return;
+    const s = pairs.reduce((a, [, q]) => a + 1 / q, 0);
+    for (const [k, q] of pairs) fair[k] = 1 / q / s;
+  };
+  const h2h = b.markets.find((x) => x.key === "h2h");
+  if (h2h) {
+    const get = (n) => h2h.outcomes.find((o) => (n === "Draw" ? o.name === n : sameTeam(o.name, n)))?.price;
+    devig([["1", get(home)], ["X", get("Draw")], ["2", get(away)]]);
+  }
+  const totals = b.markets.find((x) => x.key === "totals");
+  if (totals) {
+    const get = (n) => totals.outcomes.find((o) => o.name === n && Number(o.point) === 2.5)?.price;
+    devig([["O2.5", get("Over")], ["U2.5", get("Under")]]);
+  }
+  return Object.keys(fair).length ? fair : null;
+}
+
+async function cmdValue() {
+  const token = process.env.FOOTBALL_DATA_TOKEN;
+  const oddsKey = process.env.ODDS_API_KEY;
+  if (!token) die("FOOTBALL_DATA_TOKEN absent.");
+  if (!oddsKey) die("ODDS_API_KEY absente.");
+
+  // Jusqu'au prochain lundi inclus.
+  const now = new Date();
+  const toMonday = ((8 - now.getUTCDay()) % 7) || 7;
+  const from = now.toISOString().slice(0, 10);
+  const to = new Date(now.getTime() + toMonday * 864e5).toISOString().slice(0, 10);
+
+  const { matches = [] } = await fd(
+    `matches?competitions=${VALUE_COMPS.join(",")}&dateFrom=${from}&dateTo=${to}`, token
+  );
+  const soon = now.getTime() + 30 * 60000;
+  const upcoming = matches.filter((m) =>
+    (m.status === "TIMED" || m.status === "SCHEDULED") &&
+    Date.parse(m.utcDate) > soon &&
+    WEEKEND_DAYS.has(new Date(m.utcDate).getUTCDay())
+  );
+  console.log(`${upcoming.length} match(s) du vendredi au lundi, jusqu'au ${to}.`);
+  if (!upcoming.length) return console.log("Aucun match ce week-end (trêve internationale ?).");
+
+  const db = await load();
+  const already = new Set(db.picks.map((p) => String(p.matchId)));
+  const sports = await (await fetch(`${OA}/sports?apiKey=${oddsKey}`)).json();
+  if (!Array.isArray(sports)) die(`Liste des sports illisible : ${JSON.stringify(sports).slice(0, 200)}`);
+
+  const stats = { apparies: 0, sansEvenement: 0, sansPinnacle: 0, sansPrixFr: 0, horsCote: 0 };
+  const best1 = [];
+
+  for (const comp of [...new Set(upcoming.map((m) => m.competition.code))]) {
+    const hints = SPORT_HINTS[comp] || [];
+    const sport = sports.find((x) => hints.some((h) => x.key.includes(h)));
+    if (!sport) { console.warn(`Pas de clé de sport pour ${comp}.`); continue; }
+    const res = await fetch(
+      `${OA}/sports/${sport.key}/odds?apiKey=${oddsKey}&regions=eu&markets=h2h,totals&oddsFormat=decimal`
+    );
+    if (!res.ok) { console.warn(`Cotes ${sport.key} → ${res.status}`); continue; }
+    console.log(`${sport.key} · crédits restants : ${res.headers.get("x-requests-remaining")}`);
+    const events = await res.json();
+
+    for (const m of upcoming.filter((x) => x.competition.code === comp)) {
+      if (already.has(String(m.id))) continue;
+      const hn = m.homeTeam.shortName || m.homeTeam.name;
+      const an = m.awayTeam.shortName || m.awayTeam.name;
+      const ev = findEvent(m.utcDate, [hn, m.homeTeam.name], [an, m.awayTeam.name], events);
+      if (!ev) { stats.sansEvenement++; console.warn(`Non apparié : ${hn} – ${an}`); continue; }
+      stats.apparies++;
+
+      const fair = pinnacleFair(ev.bookmakers, ev.home_team, ev.away_team);
+      if (!fair) { stats.sansPinnacle++; continue; }
+
+      let top = null;
+      for (const [market, f] of Object.entries(fair)) {
+        const o = priceFrom(ev.bookmakers, market, ev.home_team, ev.away_team);
+        if (!o) { stats.sansPrixFr++; continue; }
+        const price = best(o);
+        if (price < VALUE_MIN_ODDS || price > VALUE_MAX_ODDS) { stats.horsCote++; continue; }
+        const edge = price * f - 1;
+        if (!top || edge > top.edge) top = { m, comp, market, odds: o, price, fair: f, edge, hn, an };
+      }
+      if (top) best1.push(top);
+    }
+  }
+
+  best1.sort((a, b) => b.edge - a.edge);
+  const chosen = best1.slice(0, VALUE_PICKS);
+  console.log(`Bilan : ${JSON.stringify(stats)} · ${best1.length} candidat(s).`);
+  if (chosen.length < VALUE_PICKS) {
+    console.log(`::warning::${chosen.length} pari(s) seulement sur ${VALUE_PICKS} attendus.`);
+  }
+  if (!chosen.length) return console.log("Aucun pari publiable.");
+
+  chosen.forEach((c, i) => {
+    const LABELS = {
+      "1": `${c.hn} gagne`, X: "Match nul", "2": `${c.an} gagne`,
+      "O2.5": "Plus de 2,5 buts", "U2.5": "Moins de 2,5 buts",
+    };
+    const pct = (c.edge * 100).toFixed(1);
+    db.picks.push({
+      id: "v" + Date.now().toString(36) + i,
+      publishedAt: new Date().toISOString(),
+      comp: c.comp,
+      match: `${c.hn} – ${c.an}`,
+      market: c.market,
+      legs: null,
+      label: LABELS[c.market],
+      kickoff: c.m.utcDate,
+      matchId: String(c.m.id),
+      teams: {
+        home: { name: c.hn, fullName: c.m.homeTeam.name, crest: c.m.homeTeam.crest || null },
+        away: { name: c.an, fullName: c.m.awayTeam.name, crest: c.m.awayTeam.crest || null },
+      },
+      stakePct: 0.01,
+      modelProb: Number(c.fair.toFixed(4)),
+      modelEdge: Number(c.edge.toFixed(4)),
+      why:
+        `Meilleure cote française ${c.price.toFixed(2)}, contre un prix équitable ` +
+        `Pinnacle de ${(1 / c.fair).toFixed(2)} : écart de ${c.edge >= 0 ? "+" : ""}${pct} %. ` +
+        `Un des ${VALUE_PICKS} plus grands écarts du week-end.`,
+      caveat:
+        c.edge < 0
+          ? "Écart négatif : ce pari est publié pour tenir le volume, pas parce qu'il a de la valeur."
+          : "Un écart faible peut venir d'une cote Pinnacle en retard plutôt que d'une vraie erreur de prix.",
+      odds: c.odds,
+      oddsTaken: c.price,
+      oddsClose: null,
+      status: "pending",
+      score: null,
+      auto: "ecart-pinnacle",
+      rule: "foot-v2-2026-11-08",
+    });
+    console.log(`Retenu : ${c.hn} – ${c.an} · ${c.market} @ ${c.price.toFixed(2)} · écart ${pct} %`);
+  });
+  await save(db);
+  console.log(`${chosen.length} pari(s) publié(s).`);
+}
+
+
 /* ---------------------------------------------------------------- veto
    Écarte un pari sur une information que le modèle n'a pas. Le pari reste
    suivi et réglé normalement : on mesure ensuite si les vetos ont fait
@@ -1028,24 +1209,24 @@ async function cmdVeto() {
 
 
 /* ======================================================================
-   UFC — RÈGLE FIGÉE le 14 septembre 2026, avant toute observation.
-   NE PAS MODIFIER.
+   UFC — RÈGLE v2, adoptée le 8 novembre 2026 (v1 : 1,01 à 1,20).
 
    Aucun modèle. Aucune sélection. On mise une unité sur tout combattant
-   dont la cote se situe entre 1,01 et 1,20, sans exception.
+   dont la cote de consensus se situe entre 1,01 et 1,30, sans exception.
 
-   Fondement : sur 6 916 combats depuis 2010, cette tranche affiche
-   +2,23 % de rendement, et +4,56 % sur la période de validation
-   2021-2026 (220 paris, t = 2,15). C'est sous le seuil corrigé de 2,58
-   exigé pour cinq hypothèses testées : le signal n'est pas établi, il
-   est seulement non réfuté. Le suivi sert à voir s'il persiste.
+   Sur 6 916 combats depuis 2010 : tranche 1,01-1,30, +1,28 % jusqu'en 2020
+   (903 paris, t = 0,85) et +2,23 % depuis 2021 (519 paris, t = 1,19). Le
+   rendement retombe à zéro jusqu'à 1,40 et devient négatif au-delà : ne pas
+   étendre davantage. Le signal n'est pas établi, seulement non réfuté, et
+   la borne de 1,30 a été choisie après avoir vu ces chiffres.
 
-   La marge moyenne du bookmaker en MMA est de 3,53 %, contre environ 5 %
-   sur le 1X2 football : le seuil à franchir y est plus bas.
+   Le prix retenu est le meilleur prix français disponible, sinon le
+   consensus. La v1 prenait le maximum de tous les bookmakers européens, ce
+   qui gonflait artificiellement le rendement.
    ====================================================================== */
 
 const UFC_MIN = Number(process.env.UFC_MIN_ODDS || 1.01);
-const UFC_MAX = Number(process.env.UFC_MAX_ODDS || 1.20);
+const UFC_MAX = Number(process.env.UFC_MAX_ODDS || 1.30);
 const MMA_SPORT = "mma_mixed_martial_arts";
 
 async function cmdUfc() {
@@ -1065,7 +1246,11 @@ async function cmdUfc() {
   console.log(`${events.length} combat(s) cotés.`);
 
   const db = await load();
-  const seen = new Set(db.picks.filter((p) => p.sport === "mma").map((p) => p.eventId + "|" + p.market));
+  // Par combattant et non par côté : l'API inverse parfois domicile et extérieur.
+  const fightKey = (id, fighter) => id + "|" + norm(fighter);
+  const seen = new Set(
+    db.picks.filter((p) => p.sport === "mma" && p.fighter).map((p) => fightKey(p.eventId, p.fighter))
+  );
   let kept = 0;
 
   for (const ev of events) {
@@ -1083,11 +1268,19 @@ async function cmdUfc() {
     for (const [fighter, list] of Object.entries(prices)) {
       if (list.length < MIN_BOOKS) continue;
       const ref = median(list);       // consensus, sert à décider
-      const price = Math.max(...list); // meilleur prix, sert à parier
       if (ref < UFC_MIN || ref > UFC_MAX) continue;
 
+      const french = {};
+      for (const [label, key] of Object.entries(WANT_BOOKS)) {
+        const b = (ev.bookmakers || []).find((x) => x.key === key);
+        const mk = b?.markets.find((m) => m.key === "h2h");
+        french[label] = mk?.outcomes.find((o) => o.name === fighter)?.price ?? null;
+      }
+      const price = best(french) ?? ref; // meilleur prix français, sinon consensus
+      const source = best(french) ? "meilleure cote française" : "consensus, aucune cote française";
+
       const side = fighter === ev.home_team ? "1" : "2";
-      if (seen.has(ev.id + "|" + side)) continue;
+      if (seen.has(fightKey(ev.id, fighter))) continue;
 
       const opponent = fighter === ev.home_team ? ev.away_team : ev.home_team;
       db.picks.push({
@@ -1107,21 +1300,22 @@ async function cmdUfc() {
         stakePct: 0.01,
         modelProb: Number((1 / ref).toFixed(4)),
         why:
-          `Règle figée : tout combattant coté entre ${UFC_MIN} et ${UFC_MAX} est ` +
+          `Règle : tout combattant coté entre ${UFC_MIN} et ${UFC_MAX} est ` +
           `joué, sans exception ni sélection. Consensus à ${ref.toFixed(2)}, ` +
-          `pari pris à ${price.toFixed(2)} contre ${opponent}.`,
+          `pari pris à ${price.toFixed(2)} (${source}) contre ${opponent}.`,
         caveat:
           "Aucun modèle derrière ce pari : il repose uniquement sur un biais " +
           "favori-outsider observé dans le passé, non établi statistiquement. " +
           "Un très gros favori perd tout de même environ une fois sur dix.",
-        odds: { winamax: null, betclic: null, unibet: null },
+        odds: french,
         oddsTaken: price,
         oddsClose: null,
         status: "pending",
         score: null,
         auto: "ufc-regle-figee",
+        rule: "ufc-v2-2026-11-08",
       });
-      seen.add(ev.id + "|" + side);
+      seen.add(fightKey(ev.id, fighter));
       kept++;
       console.log(`Retenu : ${fighter} @ ${price.toFixed(2)} (consensus ${ref.toFixed(2)})`);
     }
@@ -1151,10 +1345,23 @@ async function cmdUfcSettle() {
 
   const byId = new Map(events.map((e) => [e.id, e]));
   let done = 0, manual = 0;
+  const pair = (a, b) => [norm(a), norm(b)].sort().join("|");
 
   for (const p of pending) {
-    const ev = byId.get(p.eventId);
-    if (!ev || !ev.completed) continue;
+    // L'identifiant d'un combat peut changer : on retombe sur les deux noms.
+    const names = pair(p.teams?.home?.name || "", p.teams?.away?.name || "");
+    const ev =
+      (byId.get(p.eventId)?.completed && byId.get(p.eventId)) ||
+      events.find((e) => e.completed && pair(e.home_team, e.away_team) === names);
+    if (!ev) {
+      // L'API ne remonte que 3 jours : passé ce délai, plus de règlement possible.
+      if (Date.now() - Date.parse(p.kickoff) > 4 * 864e5 && !p.needsManual) {
+        p.needsManual = true;
+        manual++;
+        console.log(`::warning::${p.match} : hors fenêtre de l'API, règlement manuel requis (${p.id}).`);
+      }
+      continue;
+    }
 
     // On cherche le vainqueur parmi les scores. En MMA, le vainqueur porte
     // habituellement 1 et le perdant 0.
@@ -1168,7 +1375,8 @@ async function cmdUfcSettle() {
     }
     const winner = nums[0] > nums[1] ? sc[0].name : sc[1].name;
     p.score = `${sc[0].name} ${nums[0]}–${nums[1]} ${sc[1].name}`;
-    p.status = winner === p.fighter ? "won" : "lost";
+    p.status = norm(winner) === norm(p.fighter) ? "won" : "lost";
+    delete p.needsManual;
     p.settledAt = new Date().toISOString();
     done++;
     console.log(`${p.fighter} → ${p.status}`);
@@ -1180,7 +1388,7 @@ async function cmdUfcSettle() {
 
 /* ---------------------------------------------------------------- routeur */
 
-const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, veto: cmdVeto, ufc: cmdUfc, ufcsettle: cmdUfcSettle };
+const CMDS = { settle: cmdSettle, add: cmdAdd, odds: cmdOdds, manual: cmdManual, fixtures: cmdFixtures, propose: cmdPropose, autoodds: cmdAutoOdds, model: cmdModel, value: cmdValue, veto: cmdVeto, ufc: cmdUfc, ufcsettle: cmdUfcSettle };
 const cmd = process.argv[2];
 
 if (!CMDS[cmd]) {
