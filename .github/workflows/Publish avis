@@ -1,0 +1,70 @@
+name: Publier un avis
+
+# Suivi "avis" : un pari motive, avec une raison verifiable, ecrite avant le match.
+# Sert a completer le lot hebdomadaire quand il y a moins de 5 erreurs de cote.
+
+on:
+  workflow_dispatch:
+    inputs:
+      comp:
+        description: Championnat
+        required: true
+        type: choice
+        options: [PL, PD, BL1, SA, FL1, DED, PPL]
+      match:
+        description: "Intitule (ex. Brest - PSG)"
+        required: true
+      market:
+        description: "Marche : 1 X 2 O2.5 U2.5"
+        required: true
+      label:
+        description: "Libelle affiche (ex. Brest gagne)"
+        required: true
+      kickoff:
+        description: "Coup d'envoi en UTC (2026-11-21T18:45:00Z)"
+        required: true
+      match_id:
+        description: Identifiant football-data du match
+        required: true
+      why:
+        description: La raison, precise et verifiable
+        required: true
+      caveat:
+        description: Ce qui peut le faire echouer
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: picks-write
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/cli.mjs add
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+          TRACK: avis
+          COMP: ${{ inputs.comp }}
+          MATCH: ${{ inputs.match }}
+          MARKET: ${{ inputs.market }}
+          LABEL: ${{ inputs.label }}
+          KICKOFF: ${{ inputs.kickoff }}
+          MATCH_ID: ${{ inputs.match_id }}
+          STAKE_PCT: "1"
+          WHY: ${{ inputs.why }}
+          CAVEAT: ${{ inputs.caveat }}
+      - name: Commiter l'avis
+        run: |
+          git config user.name "cote-a-cote"
+          git config user.email "actions@github.com"
+          git add data/picks.json
+          git commit -m "Avis publie"
+          git push
