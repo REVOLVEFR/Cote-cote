@@ -164,3 +164,7 @@ td .crest-none{width:20px;height:20px}
   margin-bottom:28px;font-size:14px;line-height:1.55;color:var(--ink);
   background:rgba(160,59,46,.05);max-width:70ch}
 .fictif strong{color:var(--brick)}
+
+.tracks{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.track{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--mute);border-radius:5px;background:transparent;color:inherit;cursor:pointer}
+.track.on{border-color:var(--deep);color:var(--deep);font-weight:600}
