@@ -1,7 +1,7 @@
 name: Publier automatiquement
 
-# REGLE v2 du 8 novembre 2026 : les 5 plus grands ecarts entre la meilleure
-# cote francaise et le prix equitable Pinnacle, du vendredi au lundi.
+# Suivi erreurs de cote : tous les ecarts positifs entre la meilleure cote
+# francaise et le prix equitable Pinnacle, du vendredi au lundi.
 # Publie tot le vendredi : les crons GitHub ont deja pris jusqu'a 7 h de retard.
 
 on:
@@ -28,13 +28,12 @@ jobs:
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          VALUE_PICKS: "5"
           VALUE_MIN_ODDS: "1.25"
           VALUE_MAX_ODDS: "3"
       - name: Commiter les paris
         run: |
           git config user.name "cote-a-cote"
           git config user.email "actions@github.com"
-          git add data/picks.json
+          git add data/
           git diff --staged --quiet || git commit -m "Paris publies par le modele"
           git push
