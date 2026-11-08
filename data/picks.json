@@ -34,9 +34,12 @@
       },
       "oddsTaken": 1.22,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Gandra bat Diaz par KO (R1)",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://agentmma.com/news/90298-ryan-gandra-kos-ozzy-diaz-in-r1-to-extend-win-streak-to-10",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umu477fp41",
@@ -150,9 +153,12 @@
       },
       "oddsTaken": 1.2,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Talbott bat Figueiredo (R1)",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://agentmma.com/news/91248-talbott-destroys-figueiredo-in-round-1-at-ufc-332",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umue7gn0q0",
@@ -227,9 +233,12 @@
       },
       "oddsTaken": 1.2,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Wint bat Armand par KO",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://cagesidepress.com/2026/10/03/ufc-332-anthony-wint-runs-over-debuting-lucas-armand/",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umuob0ble1",
@@ -265,9 +274,12 @@
       },
       "oddsTaken": 1.22,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Pinas bat Pulyaev par KO",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://cagesidepress.com/2026/10/03/damian-pinas-scores-brutal-knockout-of-andrey-pulayev-at-ufc-332/",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umuob0blf2",
@@ -303,9 +315,12 @@
       },
       "oddsTaken": 1.11,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Smith bat Whitehead par TKO",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://cagesidepress.com/2026/10/03/bruce-whiteheads-ufc-debut-derailed-by-low-blow-jacobe-smith-finish/",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umv8873pl0",
@@ -458,9 +473,12 @@
       },
       "oddsTaken": 1.16,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "won",
+      "score": "Szabová bat Lisboa par TKO (R3)",
+      "auto": "ufc-regle-figee",
+      "settlementSource": "https://cagesidepress.com/2026/10/31/oktagon-double-champ-lucia-szabova-shines-in-ufc-debut-against-tainara-lisboa/",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umvsbq59l1",
@@ -610,10 +628,12 @@
       },
       "oddsTaken": 1.11,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "void",
+      "score": "Doublon du pari publié le 28 octobre",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-11-08T18:30:00.000Z",
+      "settledManually": true
     }
   ],
-  "updatedAt": "2026-11-04T17:40:56.989Z"
+  "updatedAt": "2026-11-08T18:30:00.000Z"
 }
