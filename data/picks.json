@@ -788,10 +788,11 @@
       },
       "oddsTaken": 1.43,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "0-1",
       "auto": "ecart-pinnacle",
-      "rule": "foot-v2-2026-11-08"
+      "rule": "foot-v2-2026-11-08",
+      "settledAt": "2026-11-09T01:51:50.123Z"
     },
     {
       "id": "vmw85sdn44",
@@ -834,5 +835,5 @@
       "settledAt": "2026-11-08T22:21:57.351Z"
     }
   ],
-  "updatedAt": "2026-11-08T22:21:57.351Z"
+  "updatedAt": "2026-11-09T01:51:50.124Z"
 }
