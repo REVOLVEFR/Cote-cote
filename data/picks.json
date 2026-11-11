@@ -833,7 +833,167 @@
       "auto": "ecart-pinnacle",
       "rule": "foot-v2-2026-11-08",
       "settledAt": "2026-11-08T22:21:57.351Z"
+    },
+    {
+      "id": "umwceiget0",
+      "publishedAt": "2026-11-11T17:36:54.677Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Lewis McGrillen – Nawras Abzakh",
+      "market": "1",
+      "legs": null,
+      "label": "Lewis McGrillen gagne",
+      "kickoff": "2026-11-14T17:00:00Z",
+      "matchId": null,
+      "eventId": "1d5157f9bf91bcd971f3c4d60ab7b95d",
+      "fighter": "Lewis McGrillen",
+      "teams": {
+        "home": {
+          "name": "Lewis McGrillen",
+          "crest": null
+        },
+        "away": {
+          "name": "Nawras Abzakh",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8403,
+      "why": "Règle : tout combattant coté entre 1.01 et 1.3 est joué, sans exception ni sélection. Consensus à 1.19, pari pris à 1.18 (meilleure cote française) contre Nawras Abzakh.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "betclic": null,
+        "unibet": null,
+        "winamax": 1.18
+      },
+      "oddsTaken": 1.18,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee",
+      "rule": "ufc-v3-2026-11-08",
+      "track": "ufc-temoin"
+    },
+    {
+      "id": "umwceigeu1",
+      "publishedAt": "2026-11-11T17:36:54.678Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Patrick Habirora – Omar El Dafrawy",
+      "market": "1",
+      "legs": null,
+      "label": "Patrick Habirora gagne",
+      "kickoff": "2026-11-14T17:00:00Z",
+      "matchId": null,
+      "eventId": "ba2552ca4003eabe7235cfb532e3b14f",
+      "fighter": "Patrick Habirora",
+      "teams": {
+        "home": {
+          "name": "Patrick Habirora",
+          "crest": null
+        },
+        "away": {
+          "name": "Omar El Dafrawy",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8969,
+      "why": "Règle : tout combattant coté entre 1.01 et 1.3 est joué, sans exception ni sélection. Consensus à 1.11, pari pris à 1.09 (meilleure cote française) contre Omar El Dafrawy.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "betclic": null,
+        "unibet": null,
+        "winamax": 1.09
+      },
+      "oddsTaken": 1.09,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee",
+      "rule": "ufc-v3-2026-11-08",
+      "track": "ufc-temoin"
+    },
+    {
+      "id": "umwceigeu2",
+      "publishedAt": "2026-11-11T17:36:54.678Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Heili Alateng – Juan Diaz",
+      "market": "2",
+      "legs": null,
+      "label": "Juan Diaz gagne",
+      "kickoff": "2026-11-14T22:00:00Z",
+      "matchId": null,
+      "eventId": "48ac5d198a0cfd1821b577f9420fffb2",
+      "fighter": "Juan Diaz",
+      "teams": {
+        "home": {
+          "name": "Heili Alateng",
+          "crest": null
+        },
+        "away": {
+          "name": "Juan Diaz",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.7722,
+      "why": "Règle : tout combattant coté entre 1.01 et 1.3 est joué, sans exception ni sélection. Consensus à 1.29, pari pris à 1.29 (consensus, aucune cote française) contre Heili Alateng.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "betclic": null,
+        "unibet": null,
+        "winamax": null
+      },
+      "oddsTaken": 1.295,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee",
+      "rule": "ufc-v3-2026-11-08",
+      "track": "ufc-temoin"
+    },
+    {
+      "id": "umwceigeu3",
+      "publishedAt": "2026-11-11T17:36:54.678Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Jared Gordon – Melquizael Costa",
+      "market": "2",
+      "legs": null,
+      "label": "Melquizael Costa gagne",
+      "kickoff": "2026-11-14T23:45:00Z",
+      "matchId": null,
+      "eventId": "be9015d9adeb8abb4d68c39488422cac",
+      "fighter": "Melquizael Costa",
+      "teams": {
+        "home": {
+          "name": "Jared Gordon",
+          "crest": null
+        },
+        "away": {
+          "name": "Melquizael Costa",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.8,
+      "why": "Règle : tout combattant coté entre 1.01 et 1.3 est joué, sans exception ni sélection. Consensus à 1.25, pari pris à 1.25 (consensus, aucune cote française) contre Jared Gordon.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "betclic": null,
+        "unibet": null,
+        "winamax": null
+      },
+      "oddsTaken": 1.25,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee",
+      "rule": "ufc-v3-2026-11-08",
+      "track": "ufc-temoin"
     }
   ],
-  "updatedAt": "2026-11-09T01:51:50.124Z"
+  "updatedAt": "2026-11-11T17:36:54.680Z"
 }
