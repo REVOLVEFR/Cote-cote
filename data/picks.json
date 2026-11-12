@@ -554,7 +554,8 @@
       "oddsClose": null,
       "status": "pending",
       "score": null,
-      "auto": "ufc-regle-figee"
+      "auto": "ufc-regle-figee",
+      "needsManual": true
     },
     {
       "id": "umw2ekopo1",
@@ -592,7 +593,8 @@
       "oddsClose": null,
       "status": "pending",
       "score": null,
-      "auto": "ufc-regle-figee"
+      "auto": "ufc-regle-figee",
+      "needsManual": true
     },
     {
       "id": "umw2ekopo2",
@@ -995,5 +997,5 @@
       "track": "ufc-temoin"
     }
   ],
-  "updatedAt": "2026-11-11T17:36:54.680Z"
+  "updatedAt": "2026-11-12T01:45:22.895Z"
 }
