@@ -870,11 +870,12 @@
       },
       "oddsTaken": 1.18,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Lewis McGrillen 1–0 Nawras Abzakh",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
-      "track": "ufc-temoin"
+      "track": "ufc-temoin",
+      "settledAt": "2026-11-14T23:34:14.560Z"
     },
     {
       "id": "umwceigeu1",
@@ -910,11 +911,12 @@
       },
       "oddsTaken": 1.09,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Patrick Habirora 1–0 Omar El Dafrawy",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
-      "track": "ufc-temoin"
+      "track": "ufc-temoin",
+      "settledAt": "2026-11-14T23:34:14.561Z"
     },
     {
       "id": "umwceigeu2",
@@ -997,5 +999,5 @@
       "track": "ufc-temoin"
     }
   ],
-  "updatedAt": "2026-11-12T01:45:22.895Z"
+  "updatedAt": "2026-11-14T23:34:14.561Z"
 }
