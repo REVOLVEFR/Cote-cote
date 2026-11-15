@@ -514,9 +514,10 @@
       },
       "oddsTaken": 1.11,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
-      "auto": "ufc-regle-figee"
+      "status": "lost",
+      "score": "Bilal Hasan 0–1 Luis Gurule",
+      "auto": "ufc-regle-figee",
+      "settledAt": "2026-11-15T15:11:14.705Z"
     },
     {
       "id": "umw2ekopo0",
@@ -952,11 +953,12 @@
       },
       "oddsTaken": 1.295,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Heili Alateng 0–1 Juan Diaz",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
-      "track": "ufc-temoin"
+      "track": "ufc-temoin",
+      "settledAt": "2026-11-15T15:11:14.706Z"
     },
     {
       "id": "umwceigeu3",
@@ -992,12 +994,13 @@
       },
       "oddsTaken": 1.25,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Jared Gordon 0–1 Melquizael Costa",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
-      "track": "ufc-temoin"
+      "track": "ufc-temoin",
+      "settledAt": "2026-11-15T15:11:14.706Z"
     }
   ],
-  "updatedAt": "2026-11-14T23:34:14.561Z"
+  "updatedAt": "2026-11-15T15:11:14.706Z"
 }
