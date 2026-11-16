@@ -553,10 +553,12 @@
       },
       "oddsTaken": 1.21,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Milošević bat Cachoeira par TKO (R2)",
       "auto": "ufc-regle-figee",
-      "needsManual": true
+      "settlementSource": "https://cagesidepress.com/2026/11/07/ufc-vegas-124-nina-nikolija-milosevic-tenderizes-priscila-cachoeira/",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umw2ekopo1",
@@ -592,10 +594,12 @@
       },
       "oddsTaken": 1.17,
       "oddsClose": null,
-      "status": "pending",
-      "score": null,
+      "status": "won",
+      "score": "Ko bat Turman aux points",
       "auto": "ufc-regle-figee",
-      "needsManual": true
+      "settlementSource": "https://cagesidepress.com/2026/11/07/ufc-vegas-124-seok-hyeon-ko-takes-wellington-turman-the-distance/",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true
     },
     {
       "id": "umw2ekopo2",
@@ -871,12 +875,14 @@
       },
       "oddsTaken": 1.18,
       "oddsClose": null,
-      "status": "won",
-      "score": "Lewis McGrillen 1–0 Nawras Abzakh",
+      "status": "void",
+      "score": "Combat PFL (PFL Dubai, 14/11), hors périmètre UFC",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
       "track": "ufc-temoin",
-      "settledAt": "2026-11-14T23:34:14.560Z"
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settlementSource": "https://gidstats.com/events/pfl_dubai-2026-11-14/",
+      "settledManually": true
     },
     {
       "id": "umwceigeu1",
@@ -912,12 +918,14 @@
       },
       "oddsTaken": 1.09,
       "oddsClose": null,
-      "status": "won",
-      "score": "Patrick Habirora 1–0 Omar El Dafrawy",
+      "status": "void",
+      "score": "Combat PFL (PFL Dubai, 14/11), hors périmètre UFC",
       "auto": "ufc-regle-figee",
       "rule": "ufc-v3-2026-11-08",
       "track": "ufc-temoin",
-      "settledAt": "2026-11-14T23:34:14.561Z"
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settlementSource": "https://gidstats.com/events/pfl_dubai-2026-11-14/",
+      "settledManually": true
     },
     {
       "id": "umwceigeu2",
@@ -1000,7 +1008,214 @@
       "rule": "ufc-v3-2026-11-08",
       "track": "ufc-temoin",
       "settledAt": "2026-11-15T15:11:14.706Z"
+    },
+    {
+      "id": "a1mhlate",
+      "publishedAt": "2026-11-13T15:09:51.000Z",
+      "recordedAt": "2026-11-16T14:20:00.000Z",
+      "lateEntry": true,
+      "comp": "UNL",
+      "match": "Slovenia - Switzerland",
+      "market": "2",
+      "legs": null,
+      "label": "Switzerland gagne",
+      "kickoff": "2026-11-13T19:45:00Z",
+      "matchId": null,
+      "eventId": "af4d45ae5e37dc2a0e146d2a9e9a926d",
+      "teams": {
+        "home": {
+          "name": "Slovenia",
+          "crest": null
+        },
+        "away": {
+          "name": "Switzerland",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "why": "La Suisse a gagné ses 4 matchs du groupe B1 (12 pts, 11 buts marqués, 1 encaissé) et a déjà battu la Slovénie 2-1. Côté slovène, Sesko est blessé, Zec et Janza sont suspendus (Sports Mole, 12/11).",
+      "caveat": "La Suisse joue sans Xhaka, Muheim ni Manzambi (bluewin, 09/11) ; la Slovénie, à domicile, joue la 2e place. — Proposé par la tâche du vendredi 13/11 à 15 h 09 UTC, enregistré après coup le 16/11 avec tous les autres avis de ce lot. Cote : meilleure cote française relevée le 11/11, pas une cote réellement prise.",
+      "confidence": "Modérée",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.59,
+      "oddsClose": null,
+      "status": "lost",
+      "score": "0-0",
+      "settlementSource": "https://www.foxsports.com/soccer/nations-league-slovenia-vs-switzerland-nov-13-2026-game-boxscore-689057",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true,
+      "track": "treve"
+    },
+    {
+      "id": "a2mhlate",
+      "publishedAt": "2026-11-13T15:09:51.000Z",
+      "recordedAt": "2026-11-16T14:20:00.000Z",
+      "lateEntry": true,
+      "comp": "UNL",
+      "match": "Bulgaria - Iceland",
+      "market": "2",
+      "legs": null,
+      "label": "Iceland gagne",
+      "kickoff": "2026-11-13T19:45:00Z",
+      "matchId": null,
+      "eventId": "b53069411f63a0d3aed21fa84d225faf",
+      "teams": {
+        "home": {
+          "name": "Bulgaria",
+          "crest": null
+        },
+        "away": {
+          "name": "Iceland",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "why": "L'Islande est en tête du groupe (8 pts, invaincue sur ses 4 derniers matchs) et a battu la Bulgarie 3-0 le 3/10 ; la Bulgarie n'a gagné qu'un de ses 6 derniers matchs (Sports Mole, 11/11).",
+      "caveat": "Absences islandaises non trouvées ; la Bulgarie doit gagner pour rester en course. — Proposé par la tâche du vendredi 13/11 à 15 h 09 UTC, enregistré après coup le 16/11 avec tous les autres avis de ce lot. Cote : meilleure cote française relevée le 11/11, pas une cote réellement prise.",
+      "confidence": "Modérée",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.74,
+      "oddsClose": null,
+      "status": "won",
+      "score": "0-5",
+      "settlementSource": "https://www.skysports.com/football/bulgaria-vs-iceland/554094",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true,
+      "track": "treve"
+    },
+    {
+      "id": "a3mhlate",
+      "publishedAt": "2026-11-13T15:09:51.000Z",
+      "recordedAt": "2026-11-16T14:20:00.000Z",
+      "lateEntry": true,
+      "comp": "UNL",
+      "match": "Georgia - Hungary",
+      "market": "2",
+      "legs": null,
+      "label": "Hungary gagne",
+      "kickoff": "2026-11-14T17:00:00Z",
+      "matchId": null,
+      "eventId": "d548fa34308b91eb158670eb18e1deae",
+      "teams": {
+        "home": {
+          "name": "Georgia",
+          "crest": null
+        },
+        "away": {
+          "name": "Hungary",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "why": "La Géorgie n'a marqué aucun but en 4 matchs du groupe ; Kvaratskhelia blessé, Kochorashvili suspendu. La Hongrie a battu la Géorgie 1-0 le 2/10 et retrouve Kerkez (Sports Mole, 12/11).",
+      "caveat": "La Hongrie n'a marqué que 3 buts en 4 matchs : un 0-0 est plausible. — Proposé par la tâche du vendredi 13/11 à 15 h 09 UTC, enregistré après coup le 16/11 avec tous les autres avis de ce lot. Cote : meilleure cote française relevée le 11/11, pas une cote réellement prise.",
+      "confidence": "Modérée",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 2.32,
+      "oddsClose": null,
+      "status": "won",
+      "score": "0-2",
+      "settlementSource": "https://africa.espn.com/football/match/_/gameId/401861164/hungria-georgia",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true,
+      "track": "treve"
+    },
+    {
+      "id": "a4mhlate",
+      "publishedAt": "2026-11-13T15:09:51.000Z",
+      "recordedAt": "2026-11-16T14:20:00.000Z",
+      "lateEntry": true,
+      "comp": "UNL",
+      "match": "Romania - Poland",
+      "market": "2",
+      "legs": null,
+      "label": "Poland gagne",
+      "kickoff": "2026-11-14T19:45:00Z",
+      "matchId": null,
+      "eventId": "3ce5eabe80d52d3ed6056b6c141bbea8",
+      "teams": {
+        "home": {
+          "name": "Romania",
+          "crest": null
+        },
+        "away": {
+          "name": "Poland",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "why": "La Roumanie a perdu ses 4 matchs du groupe (3 buts marqués, 13 encaissés, dont 0-6 en Pologne), privée de Stanciu, Radu et Marin (Sports Mole, 13/11).",
+      "caveat": "Forme polonaise mauvaise et 2 défaites en déplacement dans le groupe ; un nul suffit à la Pologne. — Proposé par la tâche du vendredi 13/11 à 15 h 09 UTC, enregistré après coup le 16/11 avec tous les autres avis de ce lot. Cote : meilleure cote française relevée le 11/11, pas une cote réellement prise.",
+      "confidence": "Modérée",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.77,
+      "oddsClose": null,
+      "status": "lost",
+      "score": "2-1",
+      "settlementSource": "https://www.foxsports.com/soccer/nations-league-romania-vs-poland-nov-14-2026-game-boxscore-689063",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true,
+      "track": "treve"
+    },
+    {
+      "id": "a5mhlate",
+      "publishedAt": "2026-11-13T15:09:51.000Z",
+      "recordedAt": "2026-11-16T14:20:00.000Z",
+      "lateEntry": true,
+      "comp": "UFC",
+      "match": "Jared Gordon - Melquizael Costa",
+      "market": "2",
+      "legs": null,
+      "label": "Melquizael Costa gagne",
+      "kickoff": "2026-11-14T23:45:00Z",
+      "matchId": null,
+      "eventId": "be9015d9adeb8abb4d68c39488422cac",
+      "teams": {
+        "home": {
+          "name": "Jared Gordon",
+          "crest": null
+        },
+        "away": {
+          "name": "Melquizael Costa",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "why": "Gordon a 38 ans et a été finalisé lors de ses 2 derniers combats ; Costa a 30 ans, 3 pouces d'allonge en plus et a fait le poids à 155,4 lb (Heavy, DocSports, Combat Press).",
+      "caveat": "Costa remonte en poids léger, où il avait perdu en 2023 ; Gordon lutte et Costa ne défend que 50 % des amenées. — Proposé par la tâche du vendredi 13/11 à 15 h 09 UTC, enregistré après coup le 16/11 avec tous les autres avis de ce lot. Cote : celle retenue par la tâche (consensus du 11/11).",
+      "confidence": "Modérée",
+      "odds": {
+        "winamax": null,
+        "betclic": null,
+        "unibet": null
+      },
+      "oddsTaken": 1.25,
+      "oddsClose": null,
+      "status": "won",
+      "score": "Costa bat Gordon",
+      "settlementSource": "résultat déjà enregistré par le règlement automatique (pari témoin umwceigeu3)",
+      "settledAt": "2026-11-16T14:20:00.000Z",
+      "settledManually": true,
+      "track": "ufc-avis",
+      "sport": "mma",
+      "fighter": "Melquizael Costa"
     }
   ],
-  "updatedAt": "2026-11-15T15:11:14.706Z"
+  "updatedAt": "2026-11-16T14:20:00.000Z"
 }
