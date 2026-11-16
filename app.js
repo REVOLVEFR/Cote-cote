@@ -236,13 +236,9 @@ function card(p) {
 async function viewUpcoming() {
   const { picks } = await db();
   const s = measures(picks.filter((p) => !p.vetoed));
-  const pending = picks
+  const open = picks
     .filter((p) => p.status === "pending" && !p.vetoed)
     .sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)));
-  // Un pari dont le coup d'envoi est passé n'est plus « à venir » : il attend son règlement.
-  const now = Date.now();
-  const open = pending.filter((p) => !p.kickoff || Date.parse(p.kickoff) > now);
-  const waiting = pending.filter((p) => p.kickoff && Date.parse(p.kickoff) <= now);
   const aside = picks
     .filter((p) => p.status === "pending" && p.vetoed)
     .sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)));
@@ -263,17 +259,8 @@ async function viewUpcoming() {
          ${MAX_STAKE * 100} %.</p></div>${strip}` +
     (open.length
       ? open.map(card).join("")
-      : `<div class="empty">Aucun pari ouvert pour le moment. Les erreurs de cote
-           paraissent le vendredi matin (championnats), le mercredi et le samedi
-           (Ligue des Nations) ; les avis, le vendredi après-midi. Une semaine sans
-           erreur de cote est normale.</div>`) +
-    (waiting.length
-      ? `<div class="sec"><h3>En attente du résultat</h3>
-          <p class="note">Match ou combat terminé, règlement pas encore enregistré.</p>
-          <ul class="vetos">${waiting.map((p) => `<li><strong>${esc(p.match)}</strong>
-            — ${esc(p.label)}<br><span>${esc(when(p.kickoff))}${p.needsManual ? " · règlement manuel requis" : ""}</span></li>`).join("")}</ul>
-        </div>`
-      : "") +
+      : `<div class="empty">Aucun pari ouvert pour le moment. Les prochains
+           paraissent dès que les cotes ouvrent, souvent une semaine avant.</div>`) +
     (aside.length
       ? `<div class="sec"><h3>Écartés cette semaine</h3>
           <p class="note">Retenus par le modèle, mis de côté sur une information
