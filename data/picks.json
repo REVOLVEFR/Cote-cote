@@ -1215,7 +1215,47 @@
       "track": "ufc-avis",
       "sport": "mma",
       "fighter": "Melquizael Costa"
+    },
+    {
+      "id": "umwwj4xb60",
+      "publishedAt": "2026-11-25T19:41:44.994Z",
+      "sport": "mma",
+      "comp": "UFC",
+      "match": "Sergey Spivak – Mario Pinto",
+      "market": "2",
+      "legs": null,
+      "label": "Mario Pinto gagne",
+      "kickoff": "2026-12-05T15:00:00Z",
+      "matchId": null,
+      "eventId": "b6b6418ef8930c168a89cebaa361ffb3",
+      "fighter": "Mario Pinto",
+      "teams": {
+        "home": {
+          "name": "Sergey Spivak",
+          "crest": null
+        },
+        "away": {
+          "name": "Mario Pinto",
+          "crest": null
+        }
+      },
+      "stakePct": 0.01,
+      "modelProb": 0.7782,
+      "why": "Règle : tout combattant coté entre 1.01 et 1.3 est joué, sans exception ni sélection. Consensus à 1.29, pari pris à 1.28 (meilleure cote française) contre Sergey Spivak.",
+      "caveat": "Aucun modèle derrière ce pari : il repose uniquement sur un biais favori-outsider observé dans le passé, non établi statistiquement. Un très gros favori perd tout de même environ une fois sur dix.",
+      "odds": {
+        "betclic": 1.28,
+        "unibet": null,
+        "winamax": 1.26
+      },
+      "oddsTaken": 1.28,
+      "oddsClose": null,
+      "status": "pending",
+      "score": null,
+      "auto": "ufc-regle-figee",
+      "rule": "ufc-v3-2026-11-08",
+      "track": "ufc-temoin"
     }
   ],
-  "updatedAt": "2026-11-16T14:20:00.000Z"
+  "updatedAt": "2026-11-25T19:41:44.996Z"
 }
