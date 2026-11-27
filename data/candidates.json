@@ -1,1421 +1,27 @@
 {
-  "updatedAt": "2026-11-20T13:59:09.669Z",
+  "updatedAt": "2026-11-27T15:01:49.335Z",
   "fixtures": [
     {
-      "matchId": "559622",
-      "comp": "FL1",
-      "kickoff": "2026-11-20T19:45:00Z",
-      "home": "Troyes",
-      "away": "Le Havre",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.05,
-          "pinnacleProb": 0.4336
-        },
-        {
-          "market": "X",
-          "best": 3.3,
-          "pinnacleProb": 0.2861
-        },
-        {
-          "market": "2",
-          "best": 3.4,
-          "pinnacleProb": 0.2803
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.5
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.5
-        }
-      ]
-    },
-    {
-      "matchId": "559628",
-      "comp": "FL1",
-      "kickoff": "2026-11-21T16:15:00Z",
-      "home": "Nice",
-      "away": "PSG",
-      "markets": [
-        {
-          "market": "1",
-          "best": 5.75,
-          "pinnacleProb": 0.1619
-        },
-        {
-          "market": "X",
-          "best": 5.25,
-          "pinnacleProb": 0.1848
-        },
-        {
-          "market": "2",
-          "best": 1.35,
-          "pinnacleProb": 0.6532
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559624",
-      "comp": "FL1",
-      "kickoff": "2026-11-21T19:45:00Z",
-      "home": "Lille",
-      "away": "Olympique Lyon",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.17,
-          "pinnacleProb": 0.4203
-        },
-        {
-          "market": "X",
-          "best": 3.15,
-          "pinnacleProb": 0.2916
-        },
-        {
-          "market": "2",
-          "best": 3.03,
-          "pinnacleProb": 0.2881
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.4629
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.5371
-        }
-      ]
-    },
-    {
-      "matchId": "559623",
-      "comp": "FL1",
-      "kickoff": "2026-11-21T19:45:00Z",
-      "home": "RC Lens",
-      "away": "Toulouse",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.84,
-          "pinnacleProb": 0.4921
-        },
-        {
-          "market": "X",
-          "best": 3.7,
-          "pinnacleProb": 0.2423
-        },
-        {
-          "market": "2",
-          "best": 3.47,
-          "pinnacleProb": 0.2656
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559621",
-      "comp": "FL1",
-      "kickoff": "2026-11-21T19:45:00Z",
-      "home": "Monaco",
-      "away": "Auxerre",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.3,
-          "pinnacleProb": 0.6849
-        },
-        {
-          "market": "X",
-          "best": 5.25,
-          "pinnacleProb": 0.1822
-        },
-        {
-          "market": "2",
-          "best": 6.6,
-          "pinnacleProb": 0.1328
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559627",
-      "comp": "FL1",
-      "kickoff": "2026-11-21T19:45:00Z",
-      "home": "Strasbourg",
-      "away": "Brest",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.12,
-          "pinnacleProb": 0.4298
-        },
-        {
-          "market": "X",
-          "best": 3.5,
-          "pinnacleProb": 0.2569
-        },
-        {
-          "market": "2",
-          "best": 2.83,
-          "pinnacleProb": 0.3133
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559625",
-      "comp": "FL1",
-      "kickoff": "2026-11-22T14:00:00Z",
-      "home": "Paris FC",
-      "away": "Angers SCO",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.25,
-          "pinnacleProb": 0.727
-        },
-        {
-          "market": "X",
-          "best": 5.25,
-          "pinnacleProb": 0.173
-        },
-        {
-          "market": "2",
-          "best": 8.5,
-          "pinnacleProb": 0.1
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559626",
-      "comp": "FL1",
-      "kickoff": "2026-11-22T16:15:00Z",
-      "home": "Lorient",
-      "away": "Stade Rennais",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.73,
-          "pinnacleProb": 0.3292
-        },
-        {
-          "market": "X",
-          "best": 3.3,
-          "pinnacleProb": 0.2791
-        },
-        {
-          "market": "2",
-          "best": 2.25,
-          "pinnacleProb": 0.3916
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "559629",
-      "comp": "FL1",
-      "kickoff": "2026-11-22T19:45:00Z",
-      "home": "Marseille",
-      "away": "Le Mans",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.36,
-          "pinnacleProb": 0.6481
-        },
-        {
-          "market": "X",
-          "best": 5,
-          "pinnacleProb": 0.1971
-        },
-        {
-          "market": "2",
-          "best": 6,
-          "pinnacleProb": 0.1548
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564748",
-      "comp": "PD",
-      "kickoff": "2026-11-20T20:00:00Z",
-      "home": "Athletic",
-      "away": "Espanyol",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.4,
-          "pinnacleProb": 0.6434
-        },
-        {
-          "market": "X",
-          "best": 4.5,
-          "pinnacleProb": 0.2116
-        },
-        {
-          "market": "2",
-          "best": 6.3,
-          "pinnacleProb": 0.145
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564755",
-      "comp": "PD",
-      "kickoff": "2026-11-21T13:00:00Z",
-      "home": "Alavés",
-      "away": "Deportivo",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.05,
-          "pinnacleProb": 0.4336
-        },
-        {
-          "market": "X",
-          "best": 3.2,
-          "pinnacleProb": 0.2865
-        },
-        {
-          "market": "2",
-          "best": 3.2,
-          "pinnacleProb": 0.2799
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564751",
-      "comp": "PD",
-      "kickoff": "2026-11-21T15:15:00Z",
-      "home": "Rayo Vallecano",
-      "away": "Valencia",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.82,
-          "pinnacleProb": 0.4989
-        },
-        {
-          "market": "X",
-          "best": 3.3,
-          "pinnacleProb": 0.2696
-        },
-        {
-          "market": "2",
-          "best": 3.7,
-          "pinnacleProb": 0.2315
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564756",
-      "comp": "PD",
-      "kickoff": "2026-11-21T17:30:00Z",
-      "home": "Sevilla FC",
-      "away": "Real Betis",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.75,
-          "pinnacleProb": 0.3205
-        },
-        {
-          "market": "X",
-          "best": 3.25,
-          "pinnacleProb": 0.2799
-        },
-        {
-          "market": "2",
-          "best": 2.2,
-          "pinnacleProb": 0.3996
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564754",
-      "comp": "PD",
-      "kickoff": "2026-11-21T20:00:00Z",
-      "home": "Real Madrid",
-      "away": "Celta",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.1,
-          "pinnacleProb": 0.8263
-        },
-        {
-          "market": "X",
-          "best": 7.75,
-          "pinnacleProb": 0.1204
-        },
-        {
-          "market": "2",
-          "best": 13.5,
-          "pinnacleProb": 0.0534
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564749",
-      "comp": "PD",
-      "kickoff": "2026-11-22T13:00:00Z",
-      "home": "Barça",
-      "away": "Villarreal",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.14,
-          "pinnacleProb": 0.7932
-        },
-        {
-          "market": "X",
-          "best": 7,
-          "pinnacleProb": 0.1354
-        },
-        {
-          "market": "2",
-          "best": 10.5,
-          "pinnacleProb": 0.0714
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564750",
-      "comp": "PD",
-      "kickoff": "2026-11-22T15:15:00Z",
-      "home": "Santander",
-      "away": "Real Sociedad",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.9,
-          "pinnacleProb": 0.2954
-        },
-        {
-          "market": "X",
-          "best": 3.9,
-          "pinnacleProb": 0.2274
-        },
-        {
-          "market": "2",
-          "best": 1.92,
-          "pinnacleProb": 0.4772
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "564752",
-      "comp": "PD",
-      "kickoff": "2026-11-22T17:30:00Z",
-      "home": "Osasuna",
-      "away": "Málaga",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.72,
-          "pinnacleProb": 0.5208
-        },
-        {
-          "market": "X",
-          "best": 3.4,
-          "pinnacleProb": 0.2654
-        },
-        {
-          "market": "2",
-          "best": 4,
-          "pinnacleProb": 0.2138
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.4692
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.5308
-        }
-      ]
-    },
-    {
-      "matchId": "564753",
-      "comp": "PD",
-      "kickoff": "2026-11-22T20:00:00Z",
-      "home": "Getafe",
-      "away": "Atleti",
-      "markets": [
-        {
-          "market": "1",
-          "best": 5.5,
-          "pinnacleProb": 0.1485
-        },
-        {
-          "market": "X",
-          "best": 4,
-          "pinnacleProb": 0.2306
-        },
-        {
-          "market": "2",
-          "best": 1.45,
-          "pinnacleProb": 0.6209
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.4807
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.5193
-        }
-      ]
-    },
-    {
-      "matchId": "560643",
-      "comp": "PL",
-      "kickoff": "2026-11-21T12:30:00Z",
-      "home": "Man City",
-      "away": "Fulham",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.31,
-          "pinnacleProb": 0.6916
-        },
-        {
-          "market": "X",
-          "best": 5.25,
-          "pinnacleProb": 0.1764
-        },
-        {
-          "market": "2",
-          "best": 6.75,
-          "pinnacleProb": 0.1321
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560647",
-      "comp": "PL",
-      "kickoff": "2026-11-21T15:00:00Z",
-      "home": "Bournemouth",
-      "away": "Nottingham",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.84,
-          "pinnacleProb": 0.4918
-        },
-        {
-          "market": "X",
-          "best": 3.43,
-          "pinnacleProb": 0.2654
-        },
-        {
-          "market": "2",
-          "best": 3.68,
-          "pinnacleProb": 0.2428
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.5155
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.4845
-        }
-      ]
-    },
-    {
-      "matchId": "560650",
-      "comp": "PL",
-      "kickoff": "2026-11-21T15:00:00Z",
-      "home": "Coventry City",
-      "away": "Crystal Palace",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.3,
-          "pinnacleProb": 0.3807
-        },
-        {
-          "market": "X",
-          "best": 3.4,
-          "pinnacleProb": 0.2727
-        },
-        {
-          "market": "2",
-          "best": 2.65,
-          "pinnacleProb": 0.3467
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560642",
-      "comp": "PL",
-      "kickoff": "2026-11-21T15:00:00Z",
-      "home": "Chelsea",
-      "away": "Leeds United",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.78,
-          "pinnacleProb": 0.5029
-        },
-        {
-          "market": "X",
-          "best": 3.55,
-          "pinnacleProb": 0.2575
-        },
-        {
-          "market": "2",
-          "best": 3.83,
-          "pinnacleProb": 0.2397
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560648",
-      "comp": "PL",
-      "kickoff": "2026-11-21T15:00:00Z",
-      "home": "Tottenham",
-      "away": "Ipswich Town",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.46,
-          "pinnacleProb": 0.6185
-        },
-        {
-          "market": "X",
-          "best": 4.3,
-          "pinnacleProb": 0.2149
-        },
-        {
-          "market": "2",
-          "best": 5.25,
-          "pinnacleProb": 0.1666
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560644",
-      "comp": "PL",
-      "kickoff": "2026-11-21T15:00:00Z",
-      "home": "Aston Villa",
-      "away": "Sunderland",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.64,
-          "pinnacleProb": 0.5452
-        },
-        {
-          "market": "X",
-          "best": 3.73,
-          "pinnacleProb": 0.2488
-        },
-        {
-          "market": "2",
-          "best": 4.3,
-          "pinnacleProb": 0.206
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560651",
-      "comp": "PL",
-      "kickoff": "2026-11-21T17:30:00Z",
-      "home": "Newcastle",
-      "away": "Arsenal",
-      "markets": [
-        {
-          "market": "1",
-          "best": 5.1,
-          "pinnacleProb": 0.1612
-        },
-        {
-          "market": "X",
-          "best": 4,
-          "pinnacleProb": 0.2228
-        },
-        {
-          "market": "2",
-          "best": 1.5,
-          "pinnacleProb": 0.616
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560646",
-      "comp": "PL",
-      "kickoff": "2026-11-22T14:00:00Z",
-      "home": "Hull City",
-      "away": "Brighton Hove",
-      "markets": [
-        {
-          "market": "1",
-          "best": 5.4,
-          "pinnacleProb": 0.1506
-        },
-        {
-          "market": "X",
-          "best": 4.3,
-          "pinnacleProb": 0.2145
-        },
-        {
-          "market": "2",
-          "best": 1.44,
-          "pinnacleProb": 0.635
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "560645",
-      "comp": "PL",
-      "kickoff": "2026-11-22T16:30:00Z",
-      "home": "Liverpool",
-      "away": "Man United",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.62,
-          "pinnacleProb": 0.5539
-        },
-        {
-          "market": "X",
-          "best": 4,
-          "pinnacleProb": 0.2233
-        },
-        {
-          "market": "2",
-          "best": 3.95,
-          "pinnacleProb": 0.2228
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558528",
-      "comp": "SA",
-      "kickoff": "2026-11-21T14:00:00Z",
-      "home": "Lazio",
-      "away": "Lecce",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.25,
-          "pinnacleProb": 0.6906
-        },
-        {
-          "market": "X",
-          "best": 5.1,
-          "pinnacleProb": 0.1907
-        },
-        {
-          "market": "2",
-          "best": 7.75,
-          "pinnacleProb": 0.1186
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558525",
-      "comp": "SA",
-      "kickoff": "2026-11-21T14:00:00Z",
-      "home": "Como 1907",
-      "away": "Cagliari",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.2,
-          "pinnacleProb": 0.7321
-        },
-        {
-          "market": "X",
-          "best": 5.75,
-          "pinnacleProb": 0.1652
-        },
-        {
-          "market": "2",
-          "best": 8.4,
-          "pinnacleProb": 0.1027
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558526",
-      "comp": "SA",
-      "kickoff": "2026-11-21T17:00:00Z",
-      "home": "Parma",
-      "away": "Roma",
-      "markets": [
-        {
-          "market": "1",
-          "best": 8.3,
-          "pinnacleProb": 0.0957
-        },
-        {
-          "market": "X",
-          "best": 5.5,
-          "pinnacleProb": 0.161
-        },
-        {
-          "market": "2",
-          "best": 1.23,
-          "pinnacleProb": 0.7433
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558527",
-      "comp": "SA",
-      "kickoff": "2026-11-21T19:45:00Z",
-      "home": "Napoli",
-      "away": "Torino",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.42,
-          "pinnacleProb": 0.6441
-        },
-        {
-          "market": "X",
-          "best": 4.3,
-          "pinnacleProb": 0.2078
-        },
-        {
-          "market": "2",
-          "best": 5.7,
-          "pinnacleProb": 0.1482
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558521",
-      "comp": "SA",
-      "kickoff": "2026-11-22T11:30:00Z",
-      "home": "Juventus",
-      "away": "Venezia FC",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.25,
-          "pinnacleProb": 0.7088
-        },
-        {
-          "market": "X",
-          "best": 5.25,
-          "pinnacleProb": 0.1766
-        },
-        {
-          "market": "2",
-          "best": 8,
-          "pinnacleProb": 0.1146
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558522",
-      "comp": "SA",
-      "kickoff": "2026-11-22T14:00:00Z",
-      "home": "Bologna",
-      "away": "Udinese",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.62,
-          "pinnacleProb": 0.5523
-        },
-        {
-          "market": "X",
-          "best": 3.65,
-          "pinnacleProb": 0.2504
-        },
-        {
-          "market": "2",
-          "best": 4.4,
-          "pinnacleProb": 0.1973
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.5039
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.4961
-        }
-      ]
-    },
-    {
-      "matchId": "558524",
-      "comp": "SA",
-      "kickoff": "2026-11-22T14:00:00Z",
-      "home": "Sassuolo",
-      "away": "Genoa",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.6,
-          "pinnacleProb": 0.3457
-        },
-        {
-          "market": "X",
-          "best": 3.2,
-          "pinnacleProb": 0.2807
-        },
-        {
-          "market": "2",
-          "best": 2.3,
-          "pinnacleProb": 0.3736
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": 0.5064
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": 0.4936
-        }
-      ]
-    },
-    {
-      "matchId": "558523",
-      "comp": "SA",
-      "kickoff": "2026-11-22T17:00:00Z",
-      "home": "Milan",
-      "away": "Frosinone",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.45,
-          "pinnacleProb": 0.6281
-        },
-        {
-          "market": "X",
-          "best": 4.5,
-          "pinnacleProb": 0.2036
-        },
-        {
-          "market": "2",
-          "best": 4.8,
-          "pinnacleProb": 0.1682
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558520",
-      "comp": "SA",
-      "kickoff": "2026-11-22T19:45:00Z",
-      "home": "Atalanta",
-      "away": "Inter",
-      "markets": [
-        {
-          "market": "1",
-          "best": 4.4,
-          "pinnacleProb": 0.1911
-        },
-        {
-          "market": "X",
-          "best": 4.3,
-          "pinnacleProb": 0.2084
-        },
-        {
-          "market": "2",
-          "best": 1.5,
-          "pinnacleProb": 0.6005
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558833",
+      "matchId": "558820",
       "comp": "DED",
-      "kickoff": "2026-11-21T15:30:00Z",
-      "home": "NEC",
-      "away": "PSV",
-      "markets": [
-        {
-          "market": "1",
-          "best": 3.7,
-          "pinnacleProb": 0.236
-        },
-        {
-          "market": "X",
-          "best": 4.15,
-          "pinnacleProb": 0.2142
-        },
-        {
-          "market": "2",
-          "best": 1.64,
-          "pinnacleProb": 0.5498
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558835",
-      "comp": "DED",
-      "kickoff": "2026-11-21T17:45:00Z",
-      "home": "Utrecht",
-      "away": "Cambuur",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.81,
-          "pinnacleProb": 0.499
-        },
-        {
-          "market": "X",
-          "best": 3.8,
-          "pinnacleProb": 0.2325
-        },
-        {
-          "market": "2",
-          "best": 3.3,
-          "pinnacleProb": 0.2685
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558831",
-      "comp": "DED",
-      "kickoff": "2026-11-21T17:45:00Z",
-      "home": "Feyenoord",
-      "away": "Excelsior",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.15,
-          "pinnacleProb": 0.7953
-        },
-        {
-          "market": "X",
-          "best": 6.6,
-          "pinnacleProb": 0.1173
-        },
-        {
-          "market": "2",
-          "best": 9.75,
-          "pinnacleProb": 0.0874
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558832",
-      "comp": "DED",
-      "kickoff": "2026-11-21T20:00:00Z",
-      "home": "Telstar",
-      "away": "Zwolle",
-      "markets": [
-        {
-          "market": "1",
-          "best": 1.97,
-          "pinnacleProb": 0.4607
-        },
-        {
-          "market": "X",
-          "best": 3.4,
-          "pinnacleProb": 0.2613
-        },
-        {
-          "market": "2",
-          "best": 3.15,
-          "pinnacleProb": 0.278
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558834",
-      "comp": "DED",
-      "kickoff": "2026-11-21T20:00:00Z",
+      "kickoff": "2026-11-27T19:00:00Z",
       "home": "Groningen",
-      "away": "Heerenveen",
-      "markets": [
-        {
-          "market": "1",
-          "best": 2.27,
-          "pinnacleProb": 0.3774
-        },
-        {
-          "market": "X",
-          "best": 3.6,
-          "pinnacleProb": 0.2553
-        },
-        {
-          "market": "2",
-          "best": 2.48,
-          "pinnacleProb": 0.3673
-        },
-        {
-          "market": "O2.5",
-          "best": null,
-          "pinnacleProb": null
-        },
-        {
-          "market": "U2.5",
-          "best": null,
-          "pinnacleProb": null
-        }
-      ]
-    },
-    {
-      "matchId": "558828",
-      "comp": "DED",
-      "kickoff": "2026-11-22T11:15:00Z",
-      "home": "Twente",
       "away": "Willem II",
       "markets": [
         {
           "market": "1",
-          "best": 1.06,
-          "pinnacleProb": 0.8833
+          "best": 1.19,
+          "pinnacleProb": 0.7468
         },
         {
           "market": "X",
-          "best": 9,
-          "pinnacleProb": 0.0671
+          "best": 5.75,
+          "pinnacleProb": 0.1491
         },
         {
           "market": "2",
-          "best": 16,
-          "pinnacleProb": 0.0496
+          "best": 9.25,
+          "pinnacleProb": 0.104
         },
         {
           "market": "O2.5",
@@ -1430,26 +36,26 @@
       ]
     },
     {
-      "matchId": "558830",
+      "matchId": "558825",
       "comp": "DED",
-      "kickoff": "2026-11-22T13:30:00Z",
-      "home": "Sparta",
-      "away": "AZ",
+      "kickoff": "2026-11-28T15:30:00Z",
+      "home": "Excelsior",
+      "away": "Telstar",
       "markets": [
         {
           "market": "1",
-          "best": 3.93,
-          "pinnacleProb": 0.2318
+          "best": 1.88,
+          "pinnacleProb": 0.4677
         },
         {
           "market": "X",
-          "best": 3.95,
-          "pinnacleProb": 0.2252
+          "best": 3.42,
+          "pinnacleProb": 0.2643
         },
         {
           "market": "2",
-          "best": 1.64,
-          "pinnacleProb": 0.543
+          "best": 3.4,
+          "pinnacleProb": 0.268
         },
         {
           "market": "O2.5",
@@ -1464,26 +70,26 @@
       ]
     },
     {
-      "matchId": "558836",
+      "matchId": "558826",
       "comp": "DED",
-      "kickoff": "2026-11-22T13:30:00Z",
-      "home": "Ajax",
-      "away": "Den Haag",
+      "kickoff": "2026-11-28T17:45:00Z",
+      "home": "PSV",
+      "away": "Go Ahead",
       "markets": [
         {
           "market": "1",
-          "best": 1.15,
-          "pinnacleProb": 0.809
+          "best": 1.17,
+          "pinnacleProb": 0.7733
         },
         {
           "market": "X",
           "best": 6.6,
-          "pinnacleProb": 0.1163
+          "pinnacleProb": 0.1255
         },
         {
           "market": "2",
-          "best": 10.25,
-          "pinnacleProb": 0.0747
+          "best": 8.5,
+          "pinnacleProb": 0.1012
         },
         {
           "market": "O2.5",
@@ -1498,26 +104,26 @@
       ]
     },
     {
-      "matchId": "558829",
+      "matchId": "558819",
       "comp": "DED",
-      "kickoff": "2026-11-22T15:45:00Z",
-      "home": "Go Ahead",
-      "away": "Sittard",
+      "kickoff": "2026-11-28T20:00:00Z",
+      "home": "Cambuur",
+      "away": "Sparta",
       "markets": [
         {
           "market": "1",
-          "best": 1.54,
-          "pinnacleProb": 0.5822
+          "best": 2,
+          "pinnacleProb": 0.4522
         },
         {
           "market": "X",
-          "best": 4.1,
-          "pinnacleProb": 0.2197
+          "best": 3.7,
+          "pinnacleProb": 0.241
         },
         {
           "market": "2",
-          "best": 4.4,
-          "pinnacleProb": 0.1981
+          "best": 2.87,
+          "pinnacleProb": 0.3068
         },
         {
           "market": "O2.5",
@@ -1528,6 +134,1638 @@
           "market": "U2.5",
           "best": null,
           "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558827",
+      "comp": "DED",
+      "kickoff": "2026-11-29T11:15:00Z",
+      "home": "Den Haag",
+      "away": "Utrecht",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.58,
+          "pinnacleProb": 0.3587
+        },
+        {
+          "market": "X",
+          "best": 3.48,
+          "pinnacleProb": 0.2565
+        },
+        {
+          "market": "2",
+          "best": 2.25,
+          "pinnacleProb": 0.3848
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558824",
+      "comp": "DED",
+      "kickoff": "2026-11-29T13:30:00Z",
+      "home": "Feyenoord",
+      "away": "Ajax",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.12,
+          "pinnacleProb": 0.4281
+        },
+        {
+          "market": "X",
+          "best": 3.73,
+          "pinnacleProb": 0.2393
+        },
+        {
+          "market": "2",
+          "best": 2.63,
+          "pinnacleProb": 0.3326
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558821",
+      "comp": "DED",
+      "kickoff": "2026-11-29T13:30:00Z",
+      "home": "Sittard",
+      "away": "Heerenveen",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.38,
+          "pinnacleProb": 0.2625
+        },
+        {
+          "market": "X",
+          "best": 3.55,
+          "pinnacleProb": 0.2437
+        },
+        {
+          "market": "2",
+          "best": 1.84,
+          "pinnacleProb": 0.4938
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558823",
+      "comp": "DED",
+      "kickoff": "2026-11-29T15:45:00Z",
+      "home": "Zwolle",
+      "away": "AZ",
+      "markets": [
+        {
+          "market": "1",
+          "best": 4.9,
+          "pinnacleProb": 0.1799
+        },
+        {
+          "market": "X",
+          "best": 4.35,
+          "pinnacleProb": 0.2044
+        },
+        {
+          "market": "2",
+          "best": 1.46,
+          "pinnacleProb": 0.6157
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558822",
+      "comp": "DED",
+      "kickoff": "2026-11-29T19:00:00Z",
+      "home": "NEC",
+      "away": "Twente",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.6,
+          "pinnacleProb": 0.2512
+        },
+        {
+          "market": "X",
+          "best": 3.78,
+          "pinnacleProb": 0.2256
+        },
+        {
+          "market": "2",
+          "best": 1.73,
+          "pinnacleProb": 0.5232
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558515",
+      "comp": "SA",
+      "kickoff": "2026-11-27T19:45:00Z",
+      "home": "Venezia FC",
+      "away": "Bologna",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.95,
+          "pinnacleProb": 0.3071
+        },
+        {
+          "market": "X",
+          "best": 3.15,
+          "pinnacleProb": 0.3023
+        },
+        {
+          "market": "2",
+          "best": 2.35,
+          "pinnacleProb": 0.3906
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558513",
+      "comp": "SA",
+      "kickoff": "2026-11-28T14:00:00Z",
+      "home": "Frosinone",
+      "away": "Parma",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.44,
+          "pinnacleProb": 0.6407
+        },
+        {
+          "market": "X",
+          "best": 4.8,
+          "pinnacleProb": 0.1875
+        },
+        {
+          "market": "2",
+          "best": 5.4,
+          "pinnacleProb": 0.1718
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558514",
+      "comp": "SA",
+      "kickoff": "2026-11-28T17:00:00Z",
+      "home": "Torino",
+      "away": "Lazio",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.3,
+          "pinnacleProb": 0.2813
+        },
+        {
+          "market": "X",
+          "best": 3.38,
+          "pinnacleProb": 0.2796
+        },
+        {
+          "market": "2",
+          "best": 2.03,
+          "pinnacleProb": 0.4391
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5103
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4897
+        }
+      ]
+    },
+    {
+      "matchId": "558518",
+      "comp": "SA",
+      "kickoff": "2026-11-28T19:45:00Z",
+      "home": "Inter",
+      "away": "Genoa",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.24,
+          "pinnacleProb": 0.7434
+        },
+        {
+          "market": "X",
+          "best": 6.1,
+          "pinnacleProb": 0.1595
+        },
+        {
+          "market": "2",
+          "best": 8.5,
+          "pinnacleProb": 0.0971
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558517",
+      "comp": "SA",
+      "kickoff": "2026-11-29T11:30:00Z",
+      "home": "Udinese",
+      "away": "Fiorentina",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.95,
+          "pinnacleProb": 0.3043
+        },
+        {
+          "market": "X",
+          "best": 3.43,
+          "pinnacleProb": 0.2719
+        },
+        {
+          "market": "2",
+          "best": 2.17,
+          "pinnacleProb": 0.4239
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558509",
+      "comp": "SA",
+      "kickoff": "2026-11-29T14:00:00Z",
+      "home": "Sassuolo",
+      "away": "Napoli",
+      "markets": [
+        {
+          "market": "1",
+          "best": 4.5,
+          "pinnacleProb": 0.2049
+        },
+        {
+          "market": "X",
+          "best": 4.05,
+          "pinnacleProb": 0.2159
+        },
+        {
+          "market": "2",
+          "best": 1.62,
+          "pinnacleProb": 0.5792
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558512",
+      "comp": "SA",
+      "kickoff": "2026-11-29T17:00:00Z",
+      "home": "Roma",
+      "away": "Monza",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.17,
+          "pinnacleProb": 0.7831
+        },
+        {
+          "market": "X",
+          "best": 7.25,
+          "pinnacleProb": 0.1321
+        },
+        {
+          "market": "2",
+          "best": 11,
+          "pinnacleProb": 0.0848
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "558511",
+      "comp": "SA",
+      "kickoff": "2026-11-29T19:45:00Z",
+      "home": "Como 1907",
+      "away": "Juventus",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.88,
+          "pinnacleProb": 0.4757
+        },
+        {
+          "market": "X",
+          "best": 3.45,
+          "pinnacleProb": 0.2741
+        },
+        {
+          "market": "2",
+          "best": 3.6,
+          "pinnacleProb": 0.2501
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5205
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4795
+        }
+      ]
+    },
+    {
+      "matchId": "559616",
+      "comp": "FL1",
+      "kickoff": "2026-11-27T19:45:00Z",
+      "home": "Brest",
+      "away": "Paris FC",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.45,
+          "pinnacleProb": 0.2683
+        },
+        {
+          "market": "X",
+          "best": 3.4,
+          "pinnacleProb": 0.2848
+        },
+        {
+          "market": "2",
+          "best": 2.05,
+          "pinnacleProb": 0.4468
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4885
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5115
+        }
+      ]
+    },
+    {
+      "matchId": "559612",
+      "comp": "FL1",
+      "kickoff": "2026-11-28T16:15:00Z",
+      "home": "Angers SCO",
+      "away": "RC Lens",
+      "markets": [
+        {
+          "market": "1",
+          "best": 4.45,
+          "pinnacleProb": 0.1935
+        },
+        {
+          "market": "X",
+          "best": 3.95,
+          "pinnacleProb": 0.235
+        },
+        {
+          "market": "2",
+          "best": 1.65,
+          "pinnacleProb": 0.5715
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559617",
+      "comp": "FL1",
+      "kickoff": "2026-11-28T19:45:00Z",
+      "home": "Le Mans",
+      "away": "Lille",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.5,
+          "pinnacleProb": 0.2523
+        },
+        {
+          "market": "X",
+          "best": 3.27,
+          "pinnacleProb": 0.2884
+        },
+        {
+          "market": "2",
+          "best": 2,
+          "pinnacleProb": 0.4593
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559613",
+      "comp": "FL1",
+      "kickoff": "2026-11-28T19:45:00Z",
+      "home": "Le Havre",
+      "away": "Strasbourg",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.03,
+          "pinnacleProb": 0.2922
+        },
+        {
+          "market": "X",
+          "best": 3.4,
+          "pinnacleProb": 0.2748
+        },
+        {
+          "market": "2",
+          "best": 2.15,
+          "pinnacleProb": 0.433
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559614",
+      "comp": "FL1",
+      "kickoff": "2026-11-28T19:45:00Z",
+      "home": "PSG",
+      "away": "Lorient",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.16,
+          "pinnacleProb": 0.8014
+        },
+        {
+          "market": "X",
+          "best": 7.5,
+          "pinnacleProb": 0.1216
+        },
+        {
+          "market": "2",
+          "best": 12,
+          "pinnacleProb": 0.0771
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559620",
+      "comp": "FL1",
+      "kickoff": "2026-11-28T19:45:00Z",
+      "home": "Nice",
+      "away": "Troyes",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.61,
+          "pinnacleProb": 0.5727
+        },
+        {
+          "market": "X",
+          "best": 4.25,
+          "pinnacleProb": 0.2401
+        },
+        {
+          "market": "2",
+          "best": 4.4,
+          "pinnacleProb": 0.1872
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559619",
+      "comp": "FL1",
+      "kickoff": "2026-11-29T14:00:00Z",
+      "home": "Auxerre",
+      "away": "Marseille",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.65,
+          "pinnacleProb": 0.2638
+        },
+        {
+          "market": "X",
+          "best": 3.8,
+          "pinnacleProb": 0.2496
+        },
+        {
+          "market": "2",
+          "best": 1.83,
+          "pinnacleProb": 0.4866
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559618",
+      "comp": "FL1",
+      "kickoff": "2026-11-29T16:15:00Z",
+      "home": "Toulouse",
+      "away": "Stade Rennais",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.38,
+          "pinnacleProb": 0.3761
+        },
+        {
+          "market": "X",
+          "best": 3.45,
+          "pinnacleProb": 0.2644
+        },
+        {
+          "market": "2",
+          "best": 2.57,
+          "pinnacleProb": 0.3594
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "559615",
+      "comp": "FL1",
+      "kickoff": "2026-11-29T19:45:00Z",
+      "home": "Olympique Lyon",
+      "away": "Monaco",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.25,
+          "pinnacleProb": 0.3966
+        },
+        {
+          "market": "X",
+          "best": 3.25,
+          "pinnacleProb": 0.2909
+        },
+        {
+          "market": "2",
+          "best": 2.88,
+          "pinnacleProb": 0.3124
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4884
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5116
+        }
+      ]
+    },
+    {
+      "matchId": "564765",
+      "comp": "PD",
+      "kickoff": "2026-11-27T20:00:00Z",
+      "home": "Levante",
+      "away": "Santander",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.94,
+          "pinnacleProb": 0.471
+        },
+        {
+          "market": "X",
+          "best": 3.95,
+          "pinnacleProb": 0.2413
+        },
+        {
+          "market": "2",
+          "best": 3.23,
+          "pinnacleProb": 0.2876
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564760",
+      "comp": "PD",
+      "kickoff": "2026-11-28T13:00:00Z",
+      "home": "Real Betis",
+      "away": "Rayo Vallecano",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.53,
+          "pinnacleProb": 0.5964
+        },
+        {
+          "market": "X",
+          "best": 4.25,
+          "pinnacleProb": 0.2206
+        },
+        {
+          "market": "2",
+          "best": 4.95,
+          "pinnacleProb": 0.183
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564767",
+      "comp": "PD",
+      "kickoff": "2026-11-28T15:15:00Z",
+      "home": "Málaga",
+      "away": "Athletic",
+      "markets": [
+        {
+          "market": "1",
+          "best": 4.5,
+          "pinnacleProb": 0.1966
+        },
+        {
+          "market": "X",
+          "best": 3.73,
+          "pinnacleProb": 0.2474
+        },
+        {
+          "market": "2",
+          "best": 1.67,
+          "pinnacleProb": 0.556
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5167
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4833
+        }
+      ]
+    },
+    {
+      "matchId": "564759",
+      "comp": "PD",
+      "kickoff": "2026-11-28T17:30:00Z",
+      "home": "Elche",
+      "away": "Atleti",
+      "markets": [
+        {
+          "market": "1",
+          "best": 6,
+          "pinnacleProb": 0.1484
+        },
+        {
+          "market": "X",
+          "best": 4.6,
+          "pinnacleProb": 0.1979
+        },
+        {
+          "market": "2",
+          "best": 1.42,
+          "pinnacleProb": 0.6537
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564762",
+      "comp": "PD",
+      "kickoff": "2026-11-28T20:00:00Z",
+      "home": "Real Madrid",
+      "away": "Alavés",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.1,
+          "pinnacleProb": 0.865
+        },
+        {
+          "market": "X",
+          "best": 9.5,
+          "pinnacleProb": 0.0881
+        },
+        {
+          "market": "2",
+          "best": 17,
+          "pinnacleProb": 0.047
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564761",
+      "comp": "PD",
+      "kickoff": "2026-11-29T13:00:00Z",
+      "home": "Valencia",
+      "away": "Osasuna",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.08,
+          "pinnacleProb": 0.4409
+        },
+        {
+          "market": "X",
+          "best": 3.15,
+          "pinnacleProb": 0.2984
+        },
+        {
+          "market": "2",
+          "best": 3.45,
+          "pinnacleProb": 0.2607
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564766",
+      "comp": "PD",
+      "kickoff": "2026-11-29T15:15:00Z",
+      "home": "Deportivo",
+      "away": "Barça",
+      "markets": [
+        {
+          "market": "1",
+          "best": 9,
+          "pinnacleProb": 0.0948
+        },
+        {
+          "market": "X",
+          "best": 6.75,
+          "pinnacleProb": 0.1265
+        },
+        {
+          "market": "2",
+          "best": 1.19,
+          "pinnacleProb": 0.7788
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "564758",
+      "comp": "PD",
+      "kickoff": "2026-11-29T17:30:00Z",
+      "home": "Celta",
+      "away": "Villarreal",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.65,
+          "pinnacleProb": 0.3491
+        },
+        {
+          "market": "X",
+          "best": 3.35,
+          "pinnacleProb": 0.2703
+        },
+        {
+          "market": "2",
+          "best": 2.35,
+          "pinnacleProb": 0.3806
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5434
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4566
+        }
+      ]
+    },
+    {
+      "matchId": "564764",
+      "comp": "PD",
+      "kickoff": "2026-11-29T20:00:00Z",
+      "home": "Real Sociedad",
+      "away": "Sevilla FC",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.03,
+          "pinnacleProb": 0.4493
+        },
+        {
+          "market": "X",
+          "best": 3.48,
+          "pinnacleProb": 0.2547
+        },
+        {
+          "market": "2",
+          "best": 3.13,
+          "pinnacleProb": 0.2959
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5345
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4655
+        }
+      ]
+    },
+    {
+      "matchId": "560658",
+      "comp": "PL",
+      "kickoff": "2026-11-27T20:00:00Z",
+      "home": "Nottingham",
+      "away": "Chelsea",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.35,
+          "pinnacleProb": 0.4001
+        },
+        {
+          "market": "X",
+          "best": 3.55,
+          "pinnacleProb": 0.283
+        },
+        {
+          "market": "2",
+          "best": 2.77,
+          "pinnacleProb": 0.317
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5306
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4694
+        }
+      ]
+    },
+    {
+      "matchId": "560655",
+      "comp": "PL",
+      "kickoff": "2026-11-28T15:00:00Z",
+      "home": "Man United",
+      "away": "Brentford",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.08,
+          "pinnacleProb": 0.4296
+        },
+        {
+          "market": "X",
+          "best": 3.63,
+          "pinnacleProb": 0.2562
+        },
+        {
+          "market": "2",
+          "best": 3,
+          "pinnacleProb": 0.3142
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560652",
+      "comp": "PL",
+      "kickoff": "2026-11-28T15:00:00Z",
+      "home": "Leeds United",
+      "away": "Coventry City",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.43,
+          "pinnacleProb": 0.6411
+        },
+        {
+          "market": "X",
+          "best": 4.5,
+          "pinnacleProb": 0.2091
+        },
+        {
+          "market": "2",
+          "best": 6,
+          "pinnacleProb": 0.1498
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560653",
+      "comp": "PL",
+      "kickoff": "2026-11-28T17:30:00Z",
+      "home": "Ipswich Town",
+      "away": "Aston Villa",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.38,
+          "pinnacleProb": 0.2679
+        },
+        {
+          "market": "X",
+          "best": 3.73,
+          "pinnacleProb": 0.2519
+        },
+        {
+          "market": "2",
+          "best": 1.9,
+          "pinnacleProb": 0.4801
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560656",
+      "comp": "PL",
+      "kickoff": "2026-11-29T12:00:00Z",
+      "home": "Everton",
+      "away": "Liverpool",
+      "markets": [
+        {
+          "market": "1",
+          "best": 4,
+          "pinnacleProb": 0.2042
+        },
+        {
+          "market": "X",
+          "best": 4,
+          "pinnacleProb": 0.2489
+        },
+        {
+          "market": "2",
+          "best": 1.69,
+          "pinnacleProb": 0.5469
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560661",
+      "comp": "PL",
+      "kickoff": "2026-11-29T14:05:00Z",
+      "home": "Crystal Palace",
+      "away": "Hull City",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.82,
+          "pinnacleProb": 0.4964
+        },
+        {
+          "market": "X",
+          "best": 3.65,
+          "pinnacleProb": 0.2534
+        },
+        {
+          "market": "2",
+          "best": 3.75,
+          "pinnacleProb": 0.2501
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560657",
+      "comp": "PL",
+      "kickoff": "2026-11-29T14:05:00Z",
+      "home": "Fulham",
+      "away": "Bournemouth",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.73,
+          "pinnacleProb": 0.3385
+        },
+        {
+          "market": "X",
+          "best": 3.37,
+          "pinnacleProb": 0.276
+        },
+        {
+          "market": "2",
+          "best": 2.35,
+          "pinnacleProb": 0.3855
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560659",
+      "comp": "PL",
+      "kickoff": "2026-11-29T14:05:00Z",
+      "home": "Brighton Hove",
+      "away": "Newcastle",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.5,
+          "pinnacleProb": 0.6106
+        },
+        {
+          "market": "X",
+          "best": 4.4,
+          "pinnacleProb": 0.212
+        },
+        {
+          "market": "2",
+          "best": 5.1,
+          "pinnacleProb": 0.1773
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "560660",
+      "comp": "PL",
+      "kickoff": "2026-11-29T14:05:00Z",
+      "home": "Sunderland",
+      "away": "Tottenham",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.63,
+          "pinnacleProb": 0.2357
+        },
+        {
+          "market": "X",
+          "best": 3.35,
+          "pinnacleProb": 0.2824
+        },
+        {
+          "market": "2",
+          "best": 1.93,
+          "pinnacleProb": 0.4819
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4769
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5231
+        }
+      ]
+    },
+    {
+      "matchId": "560654",
+      "comp": "PL",
+      "kickoff": "2026-11-29T16:30:00Z",
+      "home": "Arsenal",
+      "away": "Man City",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.89,
+          "pinnacleProb": 0.4868
+        },
+        {
+          "market": "X",
+          "best": 3.55,
+          "pinnacleProb": 0.2583
+        },
+        {
+          "market": "2",
+          "best": 3.48,
+          "pinnacleProb": 0.2549
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "567361",
+      "comp": "PPL",
+      "kickoff": "2026-11-27T20:15:00Z",
+      "home": "Marítimo",
+      "away": "CD Nacional",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.05,
+          "pinnacleProb": 0.4431
+        },
+        {
+          "market": "X",
+          "best": 3.15,
+          "pinnacleProb": 0.3023
+        },
+        {
+          "market": "2",
+          "best": 3.48,
+          "pinnacleProb": 0.2547
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "567362",
+      "comp": "PPL",
+      "kickoff": "2026-11-28T15:30:00Z",
+      "home": "Arouca",
+      "away": "Rio Ave",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.61,
+          "pinnacleProb": 0.5666
+        },
+        {
+          "market": "X",
+          "best": 3.7,
+          "pinnacleProb": 0.2485
+        },
+        {
+          "market": "2",
+          "best": 4.75,
+          "pinnacleProb": 0.1848
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4935
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5065
+        }
+      ]
+    },
+    {
+      "matchId": "567357",
+      "comp": "PPL",
+      "kickoff": "2026-11-28T15:30:00Z",
+      "home": "Moreirense",
+      "away": "Santa Clara",
+      "markets": [
+        {
+          "market": "1",
+          "best": 3.15,
+          "pinnacleProb": 0.3053
+        },
+        {
+          "market": "X",
+          "best": 3.15,
+          "pinnacleProb": 0.3154
+        },
+        {
+          "market": "2",
+          "best": 2.2,
+          "pinnacleProb": 0.3792
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "567364",
+      "comp": "PPL",
+      "kickoff": "2026-11-28T18:00:00Z",
+      "home": "Acad. Viseu",
+      "away": "Alverca",
+      "markets": [
+        {
+          "market": "1",
+          "best": 2.38,
+          "pinnacleProb": 0.3637
+        },
+        {
+          "market": "X",
+          "best": 3.15,
+          "pinnacleProb": 0.3065
+        },
+        {
+          "market": "2",
+          "best": 2.77,
+          "pinnacleProb": 0.3298
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4729
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5271
+        }
+      ]
+    },
+    {
+      "matchId": "567356",
+      "comp": "PPL",
+      "kickoff": "2026-11-28T20:30:00Z",
+      "home": "Vitória SC",
+      "away": "Amadora",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.63,
+          "pinnacleProb": 0.5614
+        },
+        {
+          "market": "X",
+          "best": 3.73,
+          "pinnacleProb": 0.2402
+        },
+        {
+          "market": "2",
+          "best": 4.6,
+          "pinnacleProb": 0.1985
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": null
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": null
+        }
+      ]
+    },
+    {
+      "matchId": "567363",
+      "comp": "PPL",
+      "kickoff": "2026-11-29T18:00:00Z",
+      "home": "Gil Vicente",
+      "away": "Estoril Praia",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.72,
+          "pinnacleProb": 0.5316
+        },
+        {
+          "market": "X",
+          "best": 3.5,
+          "pinnacleProb": 0.2517
+        },
+        {
+          "market": "2",
+          "best": 4.1,
+          "pinnacleProb": 0.2167
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.4909
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.5091
+        }
+      ]
+    },
+    {
+      "matchId": "567358",
+      "comp": "PPL",
+      "kickoff": "2026-11-29T20:30:00Z",
+      "home": "Porto",
+      "away": "Sporting CP",
+      "markets": [
+        {
+          "market": "1",
+          "best": 1.81,
+          "pinnacleProb": 0.5016
+        },
+        {
+          "market": "X",
+          "best": 3.33,
+          "pinnacleProb": 0.2871
+        },
+        {
+          "market": "2",
+          "best": 3.88,
+          "pinnacleProb": 0.2113
+        },
+        {
+          "market": "O2.5",
+          "best": null,
+          "pinnacleProb": 0.5182
+        },
+        {
+          "market": "U2.5",
+          "best": null,
+          "pinnacleProb": 0.4818
         }
       ]
     }
